@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:mvc="http://www.springframework.org/schema/mvc"
+	   xmlns:p="http://www.springframework.org/schema/p" xmlns:util="http://www.springframework.org/schema/util"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<context:component-scan base-package="egovframework,infomind">
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service"/>
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Repository"/>
+	</context:component-scan>
+
+
+	<!-- Controller @ResponseBody 사용하기위함-->
+	<mvc:annotation-driven>
+		<mvc:message-converters>
+			<bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/>
+			<bean class="org.springframework.http.converter.StringHttpMessageConverter"/>
+			<bean class="org.springframework.http.converter.ResourceHttpMessageConverter"/>
+			<bean class="org.springframework.http.converter.xml.SourceHttpMessageConverter"/>
+
+		</mvc:message-converters>
+	</mvc:annotation-driven>
+
+	<util:properties id="infoProperties" location="classpath:/infomind/infoProps/info.properties"/>
+
+
+	<!-- For Pagination Tag -->
+	<bean id="imageRenderer" class="egovframework.com.cmm.ImagePaginationRenderer"/>
+	<bean id="cmmRenderer" class="egovframework.com.cmm.pagination.CmmPaginationRenderer"/>
+
+
+	<bean id="paginationManager" class="egovframework.rte.ptl.mvc.tags.ui.pagination.DefaultPaginationManager">
+		<property name="rendererType">
+			<map>
+				<entry key="image" value-ref="imageRenderer"/>
+				<entry key="cmm" value-ref="cmmRenderer"/>
+			</map>
+		</property>
+	</bean>
+
+	<!-- 서비스 호출 관련 applicationContext 가져올때 쓰임 -->
+	<bean id="applicationContextProvder"  class="infomind.com.cmm.support.ApplicationContextProvider"/>
+
+	<!-- Spring3 이상, jackson 라이브러리 2 이상일 때는 MappingJackson2JsonView 로 설정. -->
+	<bean id="jsonMapper" class="com.fasterxml.jackson.databind.ObjectMapper" />
+
+
+
+
+	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+		<property name="webBindingInitializer">
+			<bean class="egovframework.com.cmm.web.EgovBindingInitializer"/>
+		</property>
+	</bean>
+
+	<!-- setting Locale Locale Interceptor 설정하기  -->
+	<bean id="localeChangeInterceptor" class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor"
+		  p:paramName="lang" />
+
+	<bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver" />
+
+	<bean id="egovWebLogInterceptor" class="egovframework.com.sym.log.wlg.web.EgovWebLogInterceptor" />
+
+
+	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
+		<property name="interceptors">
+			<list>
+				<ref bean="localeChangeInterceptor"/>
+				<ref bean="egovWebLogInterceptor"/>
+			</list>
+		</property>
+	</bean>
+
+	<!-- IP 정보 기록 및 로그인 체크가 필요한 URL과 로그인 여부를 체크해줄 인터셉터를 등록한다. -->
+	<!-- 분리 -->
+
+	<!-- 인포마인드 처리가 필요할 경우 infomind.com.cmm.exception.ExceptionResolver 에서 커스텀 하시면 됨 -->
+	<!-- 기본 디폴트 처리시 org.springframework.web.servlet.handler.SimpleMappingExceptionResolver-->
+	<!--비동기 방식은 현재 BaseController Exception 처리 함 -->
+	<bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+		<!--<property name="defaultErrorView" value="egovframework/com/cmm/error/egovError"/>-->
+		<property name="defaultErrorView" value="infomind/com/cmm/error/egovError"/>
+		<property name="exceptionMappings">
+			<props>
+				<!--<prop key="org.springframework.dao.DataAccessException">egovframework/com/cmm/error/dataAccessFailure</prop>-->
+				<!--<prop key="org.springframework.transaction.TransactionException">egovframework/com/cmm/error/dataAccessFailure</prop>-->
+				<prop key="egovframework.rte.fdl.cmmn.exception.EgovBizException">egovframework/com/cmm/error/egovBizException</prop>
+				<prop key="org.springframework.web.HttpSessionRequiredException">egovframework/com/uat/uia/EgovLoginUsr</prop>
+				<prop key="egovframework.com.cmm.exception.EgovXssException">egovframework/com/cmm/error/EgovXssException</prop>
+				<!--인포마인드 처리-->
+				<prop key="org.springframework.dao.DataAccessException">infomind/com/cmm/error/dataAccessFailure</prop>
+				<prop key="org.springframework.transaction.TransactionException">infomind/com/cmm/error/dataAccessFailure</prop>
+			</props>
+		</property>
+
+	</bean>
+
+
+
+	<bean id="tilesViewResolver" class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+		<property name="viewClass" value="org.springframework.web.servlet.view.tiles3.TilesView" />
+		<property name="order" value="1" />
+	</bean>
+
+	<!-- Tiles 2 Configurer -->
+	<bean id="tilesConfigurer" class="org.springframework.web.servlet.view.tiles3.TilesConfigurer">
+		<property name="definitions">
+			<list>
+				<value>/WEB-INF/tiles/*.xml</value>
+				<!--<value>/WEB-INF/tiles/sub-layout.xml</value>-->
+				<!--<value>/WEB-INF/tiles/ax5ui-layout.xml</value>-->
+				<!--<value>/WEB-INF/tiles/homepage-layout.xml</value>-->
+				<!--<value>/WEB-INF/tiles/page-layout.xml</value>-->
+			</list>
+		</property>
+		<property name="useMutableTilesContainer" value="true"/>
+		<property name="checkRefresh" value="true"/>
+	</bean>
+
+	<!-- for JFile -->
+	<bean class="org.springframework.web.servlet.view.BeanNameViewResolver" p:order="0"/>
+
+	<!-- Thymeleaf 뷰 리졸버 -->
+	<bean id="templateResolver" class="org.thymeleaf.templateresolver.ServletContextTemplateResolver">
+		<property name="prefix" value="/WEB-INF/views/"/>
+		<property name="templateMode" value="HTML5"/>
+		<property name="characterEncoding" value="UTF-8"/>
+	</bean>
+	
+	<bean id="templateEngine" class="org.thymeleaf.spring4.SpringTemplateEngine">
+		<property name="templateResolver" ref="templateResolver" />
+	</bean>
+	<bean class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
+		<property name="templateEngine" ref="templateEngine" />
+		<property name="order" value="1" />
+		<property name="viewNames" value="*.html,*.xhtml" />
+		<property name="characterEncoding" value="UTF-8" />
+	</bean>
+
+	<!-- JstlView-->
+	<bean class="org.springframework.web.servlet.view.UrlBasedViewResolver" p:order="2"
+		  p:viewClass="org.springframework.web.servlet.view.JstlView"
+		  p:prefix="/WEB-INF/jsp/"
+		  p:suffix=".jsp"/>
+
+	<bean id="jsonView" class="org.springframework.web.servlet.view.json.MappingJackson2JsonView">
+		<property name="objectMapper" ref="jsonMapper" />
+	</bean>
+
+	<!-- Facebook 설정 -->
+	<mvc:default-servlet-handler />
+
+	<bean class="org.springframework.social.connect.web.ProviderSignInController">
+		<constructor-arg ref="connectionFactoryLocator" />
+		<constructor-arg ref="usersConnectionRepository" />
+		<constructor-arg>
+			<bean class="egovframework.com.uss.ion.fbk.web.FacebookSimpleSignInAdapter"/>
+		</constructor-arg>
+		<property name="signInUrl" value="/uss/ion/fbk/facebookSignin.do"/>
+		<property name="postSignInUrl" value="/uss/ion/fbk/facebook.do"/>
+	</bean>
+
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/uss/ion/fbk/**" />
+			<bean class="egovframework.com.uss.ion.fbk.web.FacebookUserInterceptor" >
+				<constructor-arg ref="usersConnectionRepository"/>
+			</bean>
+		</mvc:interceptor>
+	</mvc:interceptors>
+	<mvc:view-controller path="/uss/ion/fbk/facebook.do" view-name="egovframework/com/uss/ion/fbk/EgovFacebookHome" />
+	<mvc:view-controller path="/uss/ion/fbk/facebookSignin.do" view-name="egovframework/com/uss/ion/fbk/EgovFacebookSignin" />
+	<mvc:view-controller path="/uss/ion/fbk/facebookSignout.do" view-name="egovframework/com/uss/ion/fbk/EgovFacebookHome" />
+
+
+	<!--<mvc:resources mapping="/layout/**" location="/layout/"/>-->
+	<!--<mvc:resources mapping="/wp/assets/**" location="/wp/assets/"/>-->
+	<!--<mvc:resources mapping="/images/**" location="/images/"/>-->
+	<!--<mvc:resources mapping="/css/**" location="/css/"/>-->
+	<!--<mvc:resources mapping="/js/**" location="/js/"/>-->
+	<!--<mvc:resources mapping="/sources/**" location="/sources/"/>-->
+	<!--<mvc:resources mapping="/.well-known/**" location="/.well-known/"/>-->
+
+
+	<!--<bean id="viewMappings" class="org.springframework.web.servlet.view.ResourceBundleViewResolver">-->
+		<!--&lt;!&ndash;<property name="basename" value="config/jasperreports-views" />&ndash;&gt;-->
+		<!--<property name="order" value="1" />-->
+	<!--</bean>-->
+
+
+
+	<!-- 인포마인 세션 정보 Interceptors -->
+	<!--<mvc:interceptors>-->
+		<!--<mvc:interceptor>-->
+			<!--<mvc:mapping path="/cms/*/*.do" />-->
+			<!--<mvc:exclude-mapping path="/cms/LoginUsr.do"/>-->
+			<!--<mvc:exclude-mapping path="/cms/actionLogin.do"/>-->
+
+
+			<!--<bean class="infomind.com.cmm.interceptor.CmsSessionInterceptor" />-->
+		<!--</mvc:interceptor>-->
+	<!--</mvc:interceptors>-->
+
+
+
+</beans>

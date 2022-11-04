@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="InfoInteractionPageDAO">
+
+    <select id="selectPage"
+            parameterType="infomind.interaction.cms.page.vo.InfoInteractionPageVO"
+            resultType="infomind.interaction.cms.page.vo.InfoInteractionPageVO">
+        SELECT
+            PAGE_SNO
+            ,USE_YN
+            ,REG_DT
+            ,FN_USER_NM_BY_ESNTL_ID(REG_ID) as REG_ID
+            ,PROJECT_KEY
+        FROM INFO_INTRC_PROJECT_PAGE
+        WHERE 1=1
+        AND PROJECT_KEY = #{projectKey}
+        ORDER BY REG_DT desc
+        LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+    </select>
+
+    <select id="selectPageTotalCount"
+            parameterType="infomind.interaction.cms.page.vo.InfoInteractionPageVO"
+            resultType="int">
+        SELECT COUNT(*) totcnt
+        FROM INFO_INTRC_PROJECT_PAGE
+        WHERE 1=1
+          AND  PROJECT_KEY = #{projectKey}
+    </select>
+
+</mapper>

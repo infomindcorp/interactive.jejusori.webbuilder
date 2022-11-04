@@ -1,0 +1,54 @@
+@font-face {
+	font-family: 'Noto Sans KR';
+	font-style: normal;
+	font-weight: 100;
+	font-display: swap;
+	src: local('NotoSansKR-Thin'),url('../fonts/NoToSans/NotoSansKr-Thin.woff2') format('woff2'),
+	url("../fonts/NoToSans/NotoSansKR-Thin.woff") format('woff'),
+	url("../fonts/NoToSans/NotoSansKR-Thin.otf") format('opentype');
+}
+@font-face {
+	font-family: 'Noto Sans KR';
+	font-style: normal;
+	font-weight: 300;
+	font-display: swap;
+	src: local('NotoSansKR-Light'),url("../fonts/NoToSans/NotoSansKR-Light.woff2") format('woff2'),
+	url("../fonts/NoToSans/NotoSansKR-Light.woff") format('woff'),
+	url("../fonts/NoToSans/NotoSansKR-Light.otf") format('opentype');
+}
+@font-face {
+	font-family: 'Noto Sans KR';
+	font-style: normal;
+	font-weight: 400;
+	font-display: swap;
+	src: local('NotoSansKR-Regular'),url("../fonts/NoToSans/NotoSansKR-Regular.woff2") format('woff2'),
+	url("../fonts/NoToSans/NotoSansKR-Regular.woff2") format('woff'),
+	url("../fonts/NoToSans/NotoSansKR-Regular.otf") format('opentype');
+}
+@font-face {
+	font-family: 'Noto Sans KR';
+	font-style: normal;
+	font-weight: 500;
+	font-display: swap;
+	src: local('NotoSansKR-Medium'),url("../fonts/NoToSans/NotoSansKR-Medium.woff2") format('woff2'),
+	url("../fonts/NoToSans/NotoSansKR-Medium.woff") format('woff'),
+	url("../fonts/NoToSans/NotoSansKR-Medium.otf") format('opentype');
+}
+@font-face {
+	font-family: 'Noto Sans KR';
+	font-style: normal;
+	font-weight: 700;
+	font-display: swap;
+	src: local('NotoSansKR-Bold'),url("../fonts/NoToSans/NotoSansKR-Bold.woff2") format('woff2'),
+	url("../fonts/NoToSans/NotoSansKR-Bold.woff") format('woff'),
+	url("../fonts/NoToSans/NotoSansKR-Bold.otf") format('opentype');
+}
+@font-face {
+	font-family: 'Noto Sans KR';
+	font-style: normal;
+	font-weight: 900;
+	font-display: swap;
+	src: local('NotoSansKR-Black'),url("../fonts/NoToSans/NotoSansKR-Black.woff2") format('woff2'),
+	url("../fonts/NoToSans/NotoSansKR-Black.woff") format('woff'),
+	url("../fonts/NoToSans/NotoSansKR-Black.otf") format('opentype');
+}

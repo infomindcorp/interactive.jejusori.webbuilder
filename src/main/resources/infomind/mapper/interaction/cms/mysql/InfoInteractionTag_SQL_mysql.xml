@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="InfoInteractionTagDAO">
+
+    <insert id="insertTag" parameterType="infomind.interaction.cms.tag.vo.InfoInteractionTagVO">
+        INSERT INTO INFO_INTRC_TAG(
+             TAG_ID
+            ,TAG_GRP_ID
+            ,TAG_NM
+            ,TAG_DESCRIPTION
+            ,USE_YN
+        ) VALUES (
+              #{tagId}
+             ,#{tagGrpId}
+             ,#{tagNm}
+             ,#{tagDescription}
+             ,#{useYn}
+            )
+    </insert>
+
+    <update id="updateTag" parameterType="infomind.interaction.cms.tag.vo.InfoInteractionTagVO">
+        UPDATE INFO_INTRC_TAG SET
+               TAG_ID=#{tagId}
+              ,TAG_GRP_ID=#{tagGrpId}
+              ,TAG_NM=#{tagNm}
+              ,TAG_DESCRIPTION=#{tagDescription}
+              ,USE_YN=#{useYn}
+        WHERE 1=1
+        AND TAG_ID = #{tagId}
+    </update>
+    
+    <select id="selectChildTag" parameterType="infomind.interaction.cms.tagGrp.vo.InfoInteractionTagGrpVO" resultType="infomind.interaction.cms.tag.vo.InfoInteractionTagVO">
+        SELECT
+             TAG_ID
+            ,TAG_GRP_ID
+            ,TAG_NM as tagGrpNm
+            ,TAG_DESCRIPTION
+            ,USE_YN
+        FROM info_intrc_tag
+        WHERE 1=1
+        AND TAG_GRP_ID = #{tagGrpId}
+    </select>
+
+    <select id="checkTagId"  resultType="int">
+        SELECT COUNT(1) usedCnt
+        FROM
+            info_intrc_tag
+        where TAG_ID = #{tagId}
+    </select>
+
+    <select id ="selectAllTagList" parameterType="infomind.interaction.cms.tag.vo.InfoInteractionTagVO" resultType="infomind.interaction.cms.tag.vo.InfoInteractionTagVO">
+        SELECT
+              T.TAG_ID
+             ,T.TAG_GRP_ID
+             ,T.TAG_NM
+             ,T.TAG_DESCRIPTION
+             ,T.USE_YN
+             ,TG.TAG_GRP_ID
+             ,TG.TAG_GRP_NM
+        FROM INFO_INTRC_TAG_GRP TG
+        INNER JOIN INFO_INTRC_TAG T ON TG.TAG_GRP_ID = T.TAG_GRP_ID
+        WHERE 1=1
+          AND TG.TAG_GRP_ID = #{tagGroupId}
+    </select>
+
+    <select id="selectTag" parameterType="infomind.interaction.cms.tag.vo.InfoInteractionTagVO" resultType="infomind.interaction.cms.tag.vo.InfoInteractionTagVO">
+    SELECT
+            iit.TAG_ID as `value`
+           ,CONCAT(iitg.TAG_GRP_NM, ' > ',  iit.TAG_NM ) as text
+    FROM INFO_INTRC_TAG iit
+    INNER JOIN  info_intrc_tag_grp iitg
+        ON iitg.TAG_GRP_ID = iit.TAG_GRP_ID
+    </select>
+
+</mapper>

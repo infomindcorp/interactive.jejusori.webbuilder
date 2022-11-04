@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="InfoInteractionAssetsDAO">
+
+    <select id="select" parameterType="infomind.interaction.builder.vo.InfoInteractionAssetsVO"
+                        resultType="infomind.interaction.builder.vo.InfoInteractionAssetsVO">
+        SELECT
+              PROJECT_KEY
+            , SEQ
+            , TYPE
+            , SRC
+            , ABSOLUTE_PATH
+            , WIDTH
+            , HEIGHT
+            , NAME
+            , ABSOLUTE_NAME
+        FROM info_intrc_assets
+        WHERE 1=1
+
+        <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(seq)">
+          AND SEQ = #{seq}
+        </if>
+        <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(projectKey)">
+          AND PROJECT_KEY = #{projectKey}
+        </if>
+        <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(absoluteName)">
+          AND SUBSTRING_INDEX(ABSOLUTE_NAME, '.', 1) = SUBSTRING_INDEX(#{absoluteName}, '.', 1)
+        </if>
+        ORDER BY SEQ DESC
+        LIMIT 1
+    </select>
+
+    <select id="selectTotalCount" parameterType="infomind.interaction.builder.vo.InfoInteractionAssetsVO"
+                                resultType="integer">
+        SELECT COUNT(1)
+        FROM info_intrc_assets
+        WHERE 1=1
+    </select>
+
+    <select id="selectList" parameterType="infomind.interaction.builder.vo.InfoInteractionAssetsVO"
+                            resultType="infomind.interaction.builder.vo.InfoInteractionAssetsVO">
+        SELECT
+               PROJECT_KEY
+             , SEQ
+             , TYPE
+             , SRC
+             , ABSOLUTE_PATH
+             , WIDTH
+             , HEIGHT
+             , NAME
+             , ABSOLUTE_NAME
+        FROM info_intrc_assets
+        WHERE 1=1
+    </select>
+
+    <insert id="insert" parameterType="infomind.interaction.builder.vo.InfoInteractionAssetsVO">
+        INSERT INTO info_intrc_assets(PROJECT_KEY,TYPE,SRC,ABSOLUTE_PATH,WIDTH,HEIGHT,NAME,ABSOLUTE_NAME)
+        VALUES(
+              #{projectKey}
+            , #{type}
+            , #{src}
+            , #{absolutePath}
+            , #{width}
+            , #{height}
+            , #{name}
+            , #{absoluteName}
+        )
+    </insert>
+
+    <update id="update" parameterType="infomind.interaction.builder.vo.InfoInteractionAssetsVO">
+
+    </update>
+
+    <update id="delete" parameterType="infomind.interaction.builder.vo.InfoInteractionAssetsVO">
+
+    </update>
+
+</mapper>

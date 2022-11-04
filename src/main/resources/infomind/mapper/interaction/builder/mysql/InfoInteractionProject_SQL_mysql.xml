@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="InfoInteractionProjectDAO">
+
+    <select id="select" parameterType="infomind.interaction.builder.vo.InfoInteractionProjectVO"
+                        resultType="infomind.interaction.builder.vo.InfoInteractionProjectVO">
+        SELECT
+          PROJECT_KEY
+        , PROJECT_NAME
+        , PROJECT_DESC
+        , PROJECT_DATA
+        , ATCH_FILE_ID
+        , USE_SNS_SHARE_YN
+        , USE_LIKE_YN
+        , USE_COMMENT_YN
+        , SHOW_YN
+        , USE_YN
+        , REG_ID
+        , REG_DT
+        , MOD_ID
+        , MOD_DT
+        FROM info_intrc_project
+        WHERE 1=1
+
+        <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(projectKey)">
+          AND PROJECT_KEY = #{projectKey}
+        </if>
+        LIMIT 1
+    </select>
+
+    <select id="selectTotalCount" parameterType="infomind.interaction.builder.vo.InfoInteractionProjectVO"
+                                resultType="integer">
+        SELECT COUNT(1)
+        FROM info_intrc_project
+        WHERE 1=1
+    </select>
+
+    <select id="selectList" parameterType="infomind.interaction.builder.vo.InfoInteractionProjectVO"
+                            resultType="infomind.interaction.builder.vo.InfoInteractionProjectVO">
+        SELECT
+               PROJECT_KEY
+             , PROJECT_NAME
+             , PROJECT_DESC
+             , PROJECT_DATA
+             , ATCH_FILE_ID
+             , USE_SNS_SHARE_YN
+             , USE_LIKE_YN
+             , USE_COMMENT_YN
+             , SHOW_YN
+             , USE_YN
+             , REG_ID
+             , REG_DT
+             , MOD_ID
+             , MOD_DT
+        FROM info_intrc_project
+        WHERE 1=1
+    </select>
+
+    <insert id="insert" parameterType="infomind.interaction.builder.vo.InfoInteractionProjectVO">
+        INSERT INTO info_intrc_project(PROJECT_KEY, PROJECT_NAME, PROJECT_DATA)
+        VALUES(
+            #{projectKey},
+            #{projectName},
+            #{projectData}
+        )
+    </insert>
+
+    <update id="update" parameterType="infomind.interaction.builder.vo.InfoInteractionProjectVO">
+        UPDATE info_intrc_project SET
+            PROJECT_DATA = #{projectData}
+        WHERE 1=1
+        AND PROJECT_KEY = #{projectKey}
+    </update>
+
+    <update id="delete" parameterType="infomind.interaction.builder.vo.InfoInteractionProjectVO">
+
+    </update>
+
+    <insert id="insertPage" parameterType="infomind.interaction.builder.vo.InfoInteractionProjectPageVO">
+        INSERT info_intrc_project_page (PAGE_SNO, PROJECT_KEY, PROJECT_DATA, PAGE_META, PAGE_CSS, PAGE_HTML, USE_YN, REG_DT, REG_ID) VALUES (
+              #{pageSno}
+            , #{projectKey}
+            , #{projectData}
+            , #{pageMeta}
+            , #{pageCss}
+            , #{pageHtml}
+            , #{useYn}
+            , NOW()
+            , #{regId}
+        )
+    </insert>
+
+    <update id="togglePage" parameterType="infomind.interaction.builder.vo.InfoInteractionProjectPageVO">
+        UPDATE info_intrc_project_page SET
+            USE_YN = 'N'
+        WHERE 1=1
+        AND PROJECT_KEY = #{projectKey}
+    </update>
+
+    <update id="usePage" parameterType="infomind.interaction.builder.vo.InfoInteractionProjectPageVO">
+        UPDATE info_intrc_project_page SET
+            USE_YN = 'Y'
+        WHERE 1=1
+          AND PROJECT_KEY = #{projectKey}
+          AND PAGE_SNO = #{pageSno}
+    </update>
+
+    <select id="getPage" parameterType="String" resultType="infomind.interaction.builder.vo.InfoInteractionProjectPageVO">
+        SELECT
+              PAGE_SNO
+            , PROJECT_KEY
+            , PROJECT_DATA
+            , PAGE_META
+            , PAGE_CSS
+            , PAGE_HTML
+            , USE_YN
+            , REG_DT
+            , REG_ID
+        FROM info_intrc_project_page
+        WHERE 1=1
+          AND PAGE_SNO = #{pageSno}
+        ORDER BY REG_DT DESC
+            LIMIT 1
+    </select>
+
+    <select id="getPageSno" parameterType="String" resultType="String">
+        SELECT PAGE_SNO
+        FROM info_intrc_project_page
+        WHERE 1=1
+          AND USE_YN = 'Y'
+          AND PROJECT_KEY = #{projectKey}
+        ORDER BY REG_DT DESC
+            LIMIT 1
+    </select>
+
+    <select id="selectCommentList" parameterType="infomind.interaction.builder.vo.InfoIntractionCommentVO"
+            resultType="infomind.interaction.builder.vo.InfoIntractionCommentVO">
+        SELECT
+               COMMENTS_SEQ
+             , COMMENTS_TITLE
+             , COMMENTS_TEXT
+             , COMMENTS_DT
+        FROM info_intrc_comments
+        WHERE 1=1
+          AND PROJECT_KEY = #{projectKey}
+    </select>
+
+    <insert id="insertComment" parameterType="infomind.interaction.builder.vo.InfoIntractionCommentVO">
+        INSERT INTO info_intrc_comments(
+            PROJECT_KEY, COMMENTS_DT, SHOW_YN, USE_YN, REG_ID, REG_DT, COMMENTS_TITLE, COMMENTS_TEXT, PASSWD
+        ) VALUES (
+              #{projectKey}
+            , NOW()
+            , #{showYn}
+            , #{useYn}
+            , #{regId}
+            , NOW()
+            , #{commentsTitle}
+            , #{commentsText}
+            , #{passwd}
+        )
+    </insert>
+
+    <insert id="insertLog" parameterType="infomind.interaction.builder.vo.InfoIntractionUsrLogVO">
+        INSERT INTO info_intrc_usr_log(PROJECT_KEY, usr_log_type, usr_log_dt)
+        VALUES (
+             #{projectKey}
+            ,#{usrLogType}
+            ,NOW()
+        )
+    </insert>
+
+</mapper>

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>IN-CMS Interaction Builder</title>
+
+    <link th:href="@{/assets/interaction/vendor/bootstrap/css/bootstrap.min.css}" rel="stylesheet" />
+    <link th:href="@{/assets/interaction/vendor/fontawesome5/css/all.min.css}" rel="stylesheet" />
+    <link th:href="@{/assets/interaction/vendor/sweetalert2/sweetalert2.min.css}" rel="stylesheet" />
+    <script th:src="@{/assets/interaction/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/assets/interaction/vendor/sweetalert2/sweetalert2.all.js}"></script>
+
+</head>
+<body>
+
+<header>
+    <div class="collapse bg-dark" id="navbarHeader">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-8 col-md-7 py-4">
+                    <h4 class="text-white">About</h4>
+                    <p class="text-muted">Add some information about the album below, the author, or any other background context. Make it a few sentences long so folks can pick up some informative tidbits. Then, link them off to some social networking sites or contact information.</p>
+                </div>
+                <div class="col-sm-4 offset-md-1 py-4">
+                    <h4 class="text-white">Page</h4>
+                    <ul class="list-unstyled">
+                        <li><a href="/interaction/builder/" class="text-white">목록으로</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="navbar navbar-dark bg-dark shadow-sm">
+        <div class="container">
+            <a href="#" class="navbar-brand d-flex align-items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true" class="me-2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                <strong>IN-CMS Interactive</strong>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<main>
+    <section class="py-5 text-center container">
+        <div class="row py-lg-5">
+            <div class="col-lg-6 col-md-8 mx-auto">
+                <h1 class="fw-light">IN-CMS, Interaction</h1>
+                <p class="lead text-muted">간편하게 페이지를 만들어봅시다. 간편하게 페이지를 만들어봅시다, 간편하게 페이지를 만들어봅시다, 간편하게 페이지를 만들어봅시다, 간편하게 페이지를 만들어봅시다</p>
+                <p>
+                    <a href="javascript:;" onclick="onNewPagePopup()" class="btn btn-primary my-2">신규페이지 생성</a>
+                    <a href="javascript:;" class="btn btn-secondary my-2">매뉴얼 보기</a>
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <div class="py-5 bg-light">
+        <div class="container">
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+                <div class="col" th:each="item : ${list}">
+
+                    <div class="card shadow-sm">
+
+                        <div class="card-header" th:text="${item.projectKey}">
+                        </div>
+
+                        <div class="card-body">
+                            <p class="card-text" th:text="${item.projectName}"></p>
+                        </div>
+                        <div class="card-footer">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="btn-group">
+                                    <!--<button type="button" class="btn btn-sm btn-outline-secondary">View</button>-->
+                                    <a class="btn btn-sm btn-outline-secondary" th:href="@{|/interaction/builder/${item.projectKey}|}">Edit</a>
+                                </div>
+                                <small class="text-muted"></small>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer class="text-muted py-5">
+    <div class="container">
+        <p class="float-end mb-1">
+            <a href="#">Back to top</a>
+        </p>
+        <p class="mb-1">© INFOMIND</p>
+    </div>
+</footer>
+
+<script th:inline="javascript">
+
+
+    function onNewPagePopup () {
+        Swal.fire({
+            title: '신규 프로젝트 생성',
+            html:
+                '<input id="projectKey" class="swal2-input" placeholder="프로젝트 고유코드">' +
+                '<input id="projectName" class="swal2-input" placeholder="프로젝트명">',
+            focusConfirm: false,
+            preConfirm: function () {
+                var _projectKey = document.getElementById('projectKey').value;
+                var _projectName = document.getElementById('projectName').value;
+
+                fetch('/interaction/builder/store', {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        projectKey: _projectKey,
+                        projectName: _projectName
+                    })
+                }).then(function(response) {
+                    return response.json();
+                }).then(function(data) {
+                    if(!data.status) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: '등록 실패',
+                            text: '중복된 페이지 키가 있습니다.'
+                        })
+                    }else{
+                        Swal.fire({
+                            title: '등록되었습니다.',
+                            text: "빌더페이지로 바로 이동하시겠습니까?",
+                            icon: 'success',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: '빌더 페이지로 바로 이동'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                location.href = '/interaction/builder/' + _projectKey;
+                            }else{
+                                location.reload();
+                            }
+                        })
+                    }
+                }).catch(function(error) {
+                    console.log(error)
+                })
+                return []
+            }
+        })
+    }
+</script>
+
+</body>
+</html>

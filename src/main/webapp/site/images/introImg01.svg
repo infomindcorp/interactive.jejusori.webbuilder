@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="365.589" height="304.308" viewBox="0 0 365.589 304.308">
+  <defs>
+    <radialGradient id="radial-gradient" cx="0.5" cy="0.5" r="0.453" gradientUnits="objectBoundingBox">
+      <stop offset="0"/>
+      <stop offset="0.069" stop-color="#1b1b1b"/>
+      <stop offset="0.255" stop-color="#5f5f5f"/>
+      <stop offset="0.432" stop-color="#989898"/>
+      <stop offset="0.593" stop-color="#c4c4c4"/>
+      <stop offset="0.737" stop-color="#e4e4e4"/>
+      <stop offset="0.858" stop-color="#f8f8f8"/>
+      <stop offset="0.941" stop-color="#fff"/>
+    </radialGradient>
+    <radialGradient id="radial-gradient-2" cx="0.5" cy="0.5" r="0.453" gradientTransform="translate(0)" gradientUnits="objectBoundingBox">
+      <stop offset="0"/>
+      <stop offset="0.086" stop-color="#060606"/>
+      <stop offset="0.204" stop-color="#181818"/>
+      <stop offset="0.342" stop-color="#353535"/>
+      <stop offset="0.494" stop-color="#5e5e5e"/>
+      <stop offset="0.659" stop-color="#939393"/>
+      <stop offset="0.831" stop-color="#d2d2d2"/>
+      <stop offset="0.941" stop-color="#fff"/>
+    </radialGradient>
+  </defs>
+  <g id="그룹_2163" data-name="그룹 2163" transform="translate(-703.924 -359.136)">
+    <circle id="타원_159" data-name="타원 159" cx="112.335" cy="112.335" r="112.335" transform="translate(774.383 360.358)" fill="#e6e7e9"/>
+    <g id="그룹_2162" data-name="그룹 2162" transform="translate(703.924 359.136)">
+      <g id="그룹_2147" data-name="그룹 2147" transform="translate(0 0)">
+        <circle id="타원_160" data-name="타원 160" cx="10.442" cy="10.442" r="10.442" transform="translate(0 14.767) rotate(-45)" fill="#fff"/>
+        <circle id="타원_161" data-name="타원 161" cx="3.797" cy="3.797" r="3.797" transform="translate(9.397 14.767) rotate(-45)" fill="#f4584a"/>
+      </g>
+      <g id="그룹_2148" data-name="그룹 2148" transform="translate(82.691 30.778)">
+        <circle id="타원_162" data-name="타원 162" cx="10.442" cy="10.442" r="10.442" transform="translate(0 20.325) rotate(-76.717)" fill="#fff"/>
+        <circle id="타원_163" data-name="타원 163" cx="3.797" cy="3.797" r="3.797" transform="translate(8.765 8.765)" fill="#f4584a"/>
+      </g>
+      <g id="그룹_2149" data-name="그룹 2149" transform="translate(257.468 29.697)">
+        <circle id="타원_164" data-name="타원 164" cx="10.442" cy="10.442" r="10.442" transform="matrix(0.924, -0.383, 0.383, 0.924, 0, 7.992)" fill="#fff"/>
+        <circle id="타원_165" data-name="타원 165" cx="3.797" cy="3.797" r="3.797" transform="translate(9.846 9.846)" fill="#8b9997"/>
+      </g>
+      <g id="그룹_2150" data-name="그룹 2150" transform="translate(259.131 171.508)">
+        <circle id="타원_166" data-name="타원 166" cx="10.442" cy="10.442" r="10.442" transform="translate(0 20.614) rotate(-80.783)" fill="#fff"/>
+        <circle id="타원_167" data-name="타원 167" cx="3.797" cy="3.797" r="3.797" transform="translate(7.623 15.119) rotate(-80.783)" fill="#4a98d6"/>
+      </g>
+      <g id="그룹_2151" data-name="그룹 2151" transform="translate(80.485 169.651)">
+        <circle id="타원_168" data-name="타원 168" cx="10.442" cy="10.442" r="10.442" transform="translate(0 14.767) rotate(-45)" fill="#fff"/>
+        <circle id="타원_169" data-name="타원 169" cx="3.797" cy="3.797" r="3.797" transform="translate(9.397 14.767) rotate(-45)" fill="#13a6bc"/>
+      </g>
+      <g id="그룹_2152" data-name="그룹 2152" transform="translate(2.205 199.754)">
+        <circle id="타원_170" data-name="타원 170" cx="10.442" cy="10.442" r="10.442" transform="matrix(0.23, -0.973, 0.973, 0.23, 0, 20.325)" fill="#fff"/>
+        <circle id="타원_171" data-name="타원 171" cx="3.797" cy="3.797" r="3.797" transform="translate(7.994 15.385) rotate(-76.717)" fill="#13a6bc"/>
+      </g>
+      <g id="그룹_2153" data-name="그룹 2153" transform="translate(336.055 197.549)">
+        <circle id="타원_172" data-name="타원 172" cx="10.442" cy="10.442" r="10.442" transform="translate(0 14.767) rotate(-45)" fill="#fff"/>
+        <circle id="타원_173" data-name="타원 173" cx="3.797" cy="3.797" r="3.797" transform="translate(9.397 14.767) rotate(-45)" fill="#4a98d6"/>
+      </g>
+      <g id="그룹_2154" data-name="그룹 2154" transform="translate(338.26 2.205)">
+        <circle id="타원_174" data-name="타원 174" cx="10.442" cy="10.442" r="10.442" transform="translate(0 20.325) rotate(-76.717)" fill="#fff"/>
+        <circle id="타원_175" data-name="타원 175" cx="3.797" cy="3.797" r="3.797" transform="matrix(0.23, -0.973, 0.973, 0.23, 7.994, 15.385)" fill="#8b9997"/>
+      </g>
+      <g id="그룹_2161" data-name="그룹 2161" transform="translate(28.341 13.847)">
+        <g id="그룹_2157" data-name="그룹 2157">
+          <g id="그룹_2155" data-name="그룹 2155">
+            <path id="패스_5283" data-name="패스 5283" d="M858.417,428.113a.617.617,0,0,1-.438-.182l-19.891-19.891H802.1a.62.62,0,1,1,0-1.239h36.5l20.254,20.253a.62.62,0,0,1-.438,1.058Z" transform="translate(-801.482 -406.802)" fill="#999"/>
+          </g>
+          <g id="그룹_2156" data-name="그룹 2156" transform="translate(0 178.109)">
+            <path id="패스_5284" data-name="패스 5284" d="M838.6,1041.224H802.1a.62.62,0,1,1,0-1.239h35.987l19.891-19.891a.62.62,0,1,1,.876.876Z" transform="translate(-801.482 -1019.913)" fill="#999"/>
+          </g>
+        </g>
+        <g id="그룹_2160" data-name="그룹 2160" transform="translate(251.352)">
+          <g id="그룹_2158" data-name="그룹 2158">
+            <path id="패스_5285" data-name="패스 5285" d="M1667.341,428.113a.62.62,0,0,1-.438-1.058l20.254-20.253h36.5a.62.62,0,1,1,0,1.239H1687.67l-19.891,19.891A.618.618,0,0,1,1667.341,428.113Z" transform="translate(-1666.721 -406.802)" fill="#999"/>
+          </g>
+          <g id="그룹_2159" data-name="그룹 2159" transform="translate(0 178.109)">
+            <path id="패스_5286" data-name="패스 5286" d="M1723.657,1041.224h-36.5l-.181-.182-20.073-20.072a.62.62,0,0,1,.876-.876l19.891,19.891h35.987a.62.62,0,1,1,0,1.239Z" transform="translate(-1666.721 -1019.913)" fill="#999"/>
+          </g>
+        </g>
+      </g>
+    </g>
+    <circle id="타원_176" data-name="타원 176" cx="147.154" cy="147.154" r="147.154" transform="translate(765.376 369.136)" opacity="0.9" fill="url(#radial-gradient)" style="mix-blend-mode: multiply;isolation: isolate"/>
+    <circle id="타원_177" data-name="타원 177" cx="111.344" cy="111.344" r="111.344" transform="translate(790.794 368.596)" opacity="0.9" fill="url(#radial-gradient-2)" style="mix-blend-mode: multiply;isolation: isolate"/>
+    <circle id="타원_178" data-name="타원 178" cx="98.759" cy="98.759" r="98.759" transform="translate(787.96 373.934)" fill="#f4f8f9"/>
+  </g>
+</svg>

@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>IN-CMS Interaction Builder</title>
+
+    <link th:href="@{/assets/interaction/vendor/bootstrap/css/bootstrap.min.css}" rel="stylesheet"/>
+    <link th:href="@{/assets/interaction/grapesjs/css/grapes.min.css}" rel="stylesheet"/>
+    <link th:href="@{/assets/interaction/vendor/fontawesome5/css/all.min.css}" rel="stylesheet"/>
+    <link th:href="@{/assets/interaction/vendor/sweetalert2/sweetalert2.min.css}" rel="stylesheet" />
+
+
+    <script th:src="@{/assets/interaction/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/assets/interaction/grapesjs/grapes.min.js}"></script>
+    <script th:src="@{/assets/interaction/grapesjs-blocks-bootstrap5/grapesjs-blocks-bootstrap5.min.js}"></script>
+    <script th:src="@{/site/js/jquery-3.5.1.min.js}"></script>
+    <script th:src="@{/site/js/common.js}"></script>
+    <script th:src="@{/site/js/swiper-bundle.js}"></script>
+    <script th:src="@{/site/js/slick.min.js}"></script>
+    <script th:src="@{/assets/interaction/vendor/aos/aos.js}"></script>
+    <script th:src="@{/assets/interaction/vendor/sweetalert2/sweetalert2.all.js}"></script>
+
+    <script th:src="@{/site/js/page-builder-data.js}"></script>
+
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+        }
+
+    </style>
+</head>
+<body>
+
+
+<header>
+    <div class="collapse bg-dark" id="navbarHeader">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-8 col-md-7 py-4">
+                    <h4 class="text-white">About</h4>
+                    <p class="text-muted">Add some information about the album below, the author, or any other background context. Make it a few sentences long so folks can pick up some informative tidbits. Then, link them off to some social networking sites or contact information.</p>
+                </div>
+                <div class="col-sm-4 offset-md-1 py-4">
+                    <h4 class="text-white">Page</h4>
+                    <ul class="list-unstyled">
+                        <li><a href="/interaction/builder/" class="text-white">목록으로</a></li>
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="navbar navbar-dark bg-dark shadow-sm">
+        <div class="container">
+            <a href="#" class="navbar-brand d-flex align-items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true" class="me-2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                <strong>IN-CMS Interactive</strong>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<div id="gjs">
+</div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var projectKey = /*[[${projectKey}]]*/ 'default';
+    /*]]>*/
+</script>
+
+<script th:inline="javascript">
+    document.addEventListener("DOMContentLoaded", function(event) {
+        onResize();
+    });
+
+    var windowInnerHeight = window.innerHeight;
+    var headerHeight = document.getElementsByTagName('header')[0].offsetHeight
+
+    var onResize = function () {
+        var gjsHeight = document.getElementById('gjs').offsetHeight
+        document.getElementById('gjs').style.height = windowInnerHeight - headerHeight;
+    }
+    var editor = grapesjs.init({
+        container: '#gjs',
+        height: (windowInnerHeight - headerHeight),
+        fromElement: true,
+        clearOnRender: true,
+        allowScripts: true,
+        autorender: true,
+        showDevices: true,
+        showOffsets: true,
+        forceClass: true,
+        avoidInlineStyle: false,
+        noticeOnUnload: false,
+        styleManager: {
+            clearProperties: 2,
+        },
+        plugins: [
+            'grapesjs-blocks-bootstrap5'
+        ],
+        pluginsOpts: {
+            'grapesjs-blocks-bootstrap5': {
+                blocks: {},
+                blockCategories: {
+                    forms: false,
+                },
+                labels: {},
+                formPredefinedActions: null,
+                optionsStringSeparator: '::',
+                gridDevicesPanel: false
+            }
+        },
+        i18n: {
+            locale: 'ko',
+        },
+        canvas: {
+            styles: [
+                '/assets/interaction/vendor/bootstrap/css/bootstrap.min.css',
+                '/assets/interaction/vendor/aos/aos.css',
+                '/assets/interaction/grapesjs/css/pretendard.css',
+                '/assets/interaction/grapesjs/css/NoToSans.css',
+                '/assets/interaction/grapesjs/css/BM.css',
+                '/assets/interaction/grapesjs/css/Nanum.css',
+                // '/site/css/style.css',
+                '/site/css/style-layout.css',
+                '/site/css/style-news.css',
+                '/site/css/style-sample.css',
+                '/site/css/swiper-bundle.css',
+                '/site/css/boxicons.css'
+            ],
+            scripts: [
+                '/assets/interaction/vendor/bootstrap/js/bootstrap.bundle.min.js',
+                '/assets/interaction/vendor/aos/aos.js',
+                '/site/js/jquery-3.5.1.min.js',
+                // '/site/js/common.js',
+                '/site/js/swiper-bundle.js',
+                '/site/js/slick.min.js',
+                '/site/js/news.js',
+
+            ],
+        },
+        storageManager: {
+            type: 'remote',
+            autosave: false,
+            autoload: true,
+            stepsBeforeSave: 10,
+            options: {
+                remote: {
+                    params: {
+                        projectKey: projectKey
+                    },
+                    urlLoad: '/interaction/builder/store/' + projectKey,
+                    urlStore: '/interaction/builder/store/' + projectKey,
+                    autoload: true,
+                    fetchOptions: opts => (opts.method === 'POST' ? {method: 'PATCH'} : {}),
+                    onStore: function (data, g) {
+
+                        let pageMeta = '';
+                        const attributes = g.editor.attributes.Canvas.canvas.attributes;
+                        attributes.styles.forEach(value => {
+                            pageMeta += '<link href="' + value + '" rel="stylesheet" />';
+                        })
+                        attributes.scripts.forEach(value => {
+                            pageMeta += '<script src="' + value + '"><\/script>';
+                        })
+
+                        return {
+                            id: projectKey,
+                            data: data,
+                            page: {
+                                projectKey: projectKey,
+                                pageMeta: pageMeta,
+                                pageCss: g.editor.getCss(),
+                                pageHtml: g.editor.getHtml(),
+                                pageJs: g.editor.getJs(),
+                            }
+                        }
+                    },
+                    onLoad: function (result) {
+                        return result.data
+                    }
+                }
+            }
+        },
+        assetManager: {
+            assets: [],
+            upload: '/interaction/builder/assets/upload',
+            uploadName: 'files',
+            params: {
+                projectKey: projectKey
+            }
+        }
+    });
+
+
+    var em = function (editor) {
+        return {
+            canvas: editor.Canvas,
+            assetManager: editor.AssetManager,
+            blockManager: editor.BlockManager,
+            codeManager: editor.CodeManager,
+            deviceManager: editor.DeviceManager,
+            layerManager: editor.LayerManager,
+            selectorManager: editor.SelectorManager,
+            storageManager: editor.StorageManager,
+            traitManager: editor.TraitManager,
+            domComponents: editor.DomComponents,
+            styleManager: editor.StyleManager,
+
+            panels: editor.Panels,
+            commands: editor.Commands,
+        }
+    }(editor);
+
+    var canvasConfig = em.canvas.getConfig();
+
+    // 외부 폰트 설정
+    var prop = em.styleManager.getProperty('typography', 'font-family');
+    prop.set('options', [
+        ...prop.get('options'), // GrapesJS 폰트 기본 로드
+        {name: '프리텐다드', value: "'Pretendard', sans-serif"},
+        {name: '노토산스', value: "'Noto Sans KR', sans-serif"},
+        {name: '나눔스퀘어', value: "'NanumSquare', sans-serif"},
+        {name: '나눔스퀘어네오', value: "'NanumSquareNeo', sans-serif"},
+        {name: '나눔딸에게엄마가', value: "'Nanum mom', sans-serif"},
+        {name: '나눔규리의일기', value: "'Nanum GyuRi', sans-serif"},
+        {name: '나눔힘내라는말보단', value: "'Nanum Cheerup', sans-serif"},
+        {name: '배민주아', value: "'BMJUA', sans-serif"},
+        {name: '배민을지로오래오래', value: "'BMEuljirooraeorae', sans-serif"},
+        {name: '배민을지로10년후', value: "'BMEuljiro10yearslater', sans-serif"},
+    ]);
+
+
+    // Block 샘플 생성
+    pageBuilderDataService.createBlockComponent(em.blockManager);
+
+    // 모든 DOM 컴포넌트 오버랩 [AOS, JS]
+    em.domComponents.getTypes().map(function(type) {
+        if(em.domComponents.getType(type.id).model.prototype.defaults.traits) {
+            em.domComponents.addType(type.id, {
+                model: {
+                    defaults: {
+                        traits: [
+                            // 기존 컴포넌트 traits 적용
+                            ...em.domComponents.getType(type.id).model.prototype.defaults.traits,
+                            {
+                                label: 'data-aos',
+                                name: 'data-aos',
+                                type: 'select',
+                                options: [
+                                    {id: 'none', name: 'none'},
+                                    {id: 'fade-up', name: 'fade-up'},
+                                    {id: 'fade-down', name: 'fade-down'},
+                                    {id: 'fade-left', name: 'fade-left'},
+                                    {id: 'fade-right', name: 'fade-right'},
+                                    {id: 'fade-up-left', name: 'fade-up-left'},
+                                    {id: 'fade-up-right', name: 'fade-up-right'},
+                                    {id: 'fade-down-left', name: 'fade-down-left'},
+                                    {id: 'fade-down-right', name: 'fade-down-right'},
+                                    {id: 'flip-left', name: 'flip-left'},
+                                    {id: 'flip-right', name: 'flip-right'},
+                                    {id: 'flip-up', name: 'flip-up'},
+                                    {id: 'flip-down', name: 'flip-down'},
+                                    {id: 'zoom-in', name: 'zoom-in'},
+                                    {id: 'zoom-in-up', name: 'zoom-in-up'},
+                                    {id: 'zoom-in-down', name: 'zoom-in-down'},
+                                    {id: 'zoom-in-left', name: 'zoom-in-left'},
+                                    {id: 'zoom-in-right', name: 'zoom-in-right'},
+                                    {id: 'zoom-out', name: 'zoom-out'},
+                                    {id: 'zoom-out-up', name: 'zoom-out-up'},
+                                    {id: 'zoom-out-down', name: 'zoom-out-down'},
+                                    {id: 'zoom-out-left', name: 'zoom-out-left'},
+                                    {id: 'zoom-out-right', name: 'zoom-out-right'},
+                                ],
+                            },
+                            {
+                                label: 'data-aos-duration',
+                                name: 'data-aos-duration',
+                                type: 'number',
+                                placeholder: '0-3000',
+                                min: 0, // Minimum number value
+                                max: 3000, // Maximum number value
+                                step: 100, // Number of steps
+                            }
+                        ]
+                    },
+                    init: function() {
+
+                        this.listenTo(this, 'change:attributes:data-aos', function() {
+                            if(typeof em.canvas.getWindow().AOS == 'undefined') {
+                                console.error('NOT FOUND AOS.JS')
+                            }else {
+                                em.canvas.getWindow().AOS.refreshHard();
+                                console.info('AOS.JS {}', 'refreshHard')
+                            }
+                        })
+                        this.listenTo(this, 'change:attributes:data-aos-duration', function() {
+                            if(typeof em.canvas.getWindow().AOS == 'undefined') {
+                                console.error('NOT FOUND AOS.JS')
+                            }else {
+                                em.canvas.getWindow().AOS.refreshHard();
+                                console.info('AOS.JS {}', 'refreshHard')
+                            }
+                        })
+
+                    },
+                }
+            })
+        }
+    })
+
+
+   /* fetch('/interaction/builder/assets/' + projectKey, {method: 'GET'})
+    .then(function(response) {
+        return response.json();
+    })
+    .then(function (data) {
+        em.assetManager.add(data.data);
+    });*/
+
+    em.panels.addButton('options', [{
+        id: 'save-db',
+        className: 'fa fa-save',
+        command: 'save-db',
+        attributes: {title: 'save page'},
+        active: false,
+    }]);
+
+    em.commands.add('save-db', {
+        run: function (editor, sender) {
+            Swal.fire({
+                title: '저장하시겠습니까?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: '네',
+                cancelButtonText: '아니요',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                            icon: 'success',
+                            text: '저장되었습니다.'
+                        }
+                    )
+                    sender && sender.set('active', 0); // turn off the button
+                    editor.store();
+                }
+            })
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+@font-face {
+	font-family: 'NanumSquare';
+	font-style: normal;
+	font-weight: 300;
+	font-display: swap;
+	src: local('NanumsquareL'),url('../fonts/Nanum/NanumsquareL.woff2') format('woff2'),
+	url("../fonts/Nanum/NanumsquareL.woff") format('woff');
+}
+
+@font-face {
+	font-family: 'NanumSquare';
+	font-style: normal;
+	font-weight: 500;
+	font-display: swap;
+	src: local('NanumsquareR'),url('../fonts/Nanum/NanumsquareR.woff2') format('woff2'),
+	url("../fonts/Nanum/NanumsquareR.woff") format('woff');
+}
+
+@font-face {
+	font-family: 'NanumSquare';
+	font-style: normal;
+	font-weight: 600;
+	font-display: swap;
+	src: local('NanumsquareB'),url('../fonts/Nanum/NanumsquareB.woff2') format('woff2'),
+	url("../fonts/Nanum/NanumsquareB.woff") format('woff');
+}
+
+@font-face {
+	font-family: 'NanumSquare';
+	font-style: normal;
+	font-weight: 800;
+	font-display: swap;
+	src: local('NanumsquarEBl'),url('../fonts/Nanum/NanumsquareEB.woff2') format('woff2'),
+	url("../fonts/Nanum/NanumsquareEB.woff") format('woff');
+}
+
+@font-face {
+	font-family: 'NanumSquareNeo';
+	font-style: normal;
+	font-weight: 300;
+	font-display: swap;
+	src: local('NanumSquareNeoTTF-aLt'),
+	url("../fonts/Nanum/NanumSquareNeoTTF-aLt.woff") format('woff');
+}
+
+@font-face {
+	font-family: 'NanumSquareNeo';
+	font-style: normal;
+	font-weight: 500;
+	font-display: swap;
+	src: local('NanumSquareNeoTTF-bRg'),
+	url("../fonts/Nanum/NanumSquareNeoTTF-bRg.woff") format('woff');
+}
+
+@font-face {
+	font-family: 'NanumSquareNeo';
+	font-style: normal;
+	font-weight: 600;
+	font-display: swap;
+	src: local('NanumSquareNeoTTF-cBd'),
+	url("../fonts/Nanum/NanumSquareNeoTTF-cBd.woff") format('woff');
+}
+
+@font-face {
+	font-family: 'NanumSquareNeo';
+	font-style: normal;
+	font-weight: 800;
+	font-display: swap;
+	src: local('NanumSquareNeoTTF-dEb'),
+	url("../fonts/Nanum/NanumSquareNeoTTF-dEb.woff") format('woff');
+}
+
+@font-face {
+	font-family: 'NanumSquareNeo';
+	font-style: normal;
+	font-weight: 900;
+	font-display: swap;
+	src: local('NanumSquareNeoTTF-eHv'),
+	url("../fonts/Nanum/NanumSquareNeoTTF-eHv.woff") format('woff');
+}
+
+@font-face {
+	font-family: 'Nanum GyuRi';
+	font-style: normal;
+	font-weight: 500;
+	font-display: swap;
+	src: local('Nanum-gruri'),
+	url("../fonts/Nanum/Nanum-gruri.woff") format('woff');
+}
+
+@font-face {
+	font-family: 'Nanum mom';
+	font-style: normal;
+	font-weight: 500;
+	font-display: swap;
+	src: local('Nanum-mom'),
+	url("../fonts/Nanum/Nanum-mom.woff") format('woff');
+}
+
+@font-face {
+	font-family: 'Nanum Cheerup';
+	font-style: normal;
+	font-weight: 500;
+	font-display: swap;
+	src: local('Nanum-Cheerup'),
+	url("../fonts/Nanum/Nanum-Cheerup.woff") format('woff');
+}

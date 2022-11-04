@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+						http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd">
+
+	<!--  System Log Aspect -->
+	<bean id="syslog" class="egovframework.com.sym.log.lgm.service.EgovSysLogAspect" />
+
+	<!--  인포마인드 Log Aspect -->
+	<bean id="infolog" class="infomind.com.cmm.aspect.InfoCmsAOP" />
+
+	<aop:config>
+		<!--<aop:aspect id="sysLogAspect" ref="syslog">-->
+			<!--&lt;!&ndash;  insert로 시작되는 service Method &ndash;&gt;-->
+			<!--<aop:around pointcut="execution(public * egovframework.com..impl.*Impl.insert*(..))" method="logInsert" />-->
+			<!--&lt;!&ndash;  update로 시작되는 service Method &ndash;&gt;-->
+			<!--<aop:around pointcut="execution(public * egovframework.com..impl.*Impl.update*(..))" method="logUpdate" />-->
+			<!--&lt;!&ndash;  delete로 시작되는 service Method &ndash;&gt;-->
+			<!--<aop:around pointcut="execution(public * egovframework.com..impl.*Impl.delete*(..))" method="logDelete" />-->
+			<!--&lt;!&ndash;  select로 시작되는 service Method &ndash;&gt;-->
+			<!--<aop:around pointcut="execution(public * egovframework.com..impl.*Impl.select*(..))" method="logSelect" />-->
+
+
+
+			<!--&lt;!&ndash;  인포마인드 &ndash;&gt;-->
+
+			<!--&lt;!&ndash;  insert로 시작되는 service Method &ndash;&gt;-->
+			<!--<aop:around pointcut="execution(public * infomind.com..impl.*Impl.insert*(..))" method="logInsert" />-->
+			<!--&lt;!&ndash;  update로 시작되는 service Method &ndash;&gt;-->
+			<!--<aop:around pointcut="execution(public * infomind.com..impl.*Impl.update*(..))" method="logUpdate" />-->
+			<!--&lt;!&ndash;  delete로 시작되는 service Method &ndash;&gt;-->
+			<!--<aop:around pointcut="execution(public * infomind.com..impl.*Impl.delete*(..))" method="logDelete" />-->
+			<!--&lt;!&ndash;  select로 시작되는 service Method &ndash;&gt;-->
+			<!--<aop:around pointcut="execution(public * infomind.com..impl.*Impl.select*(..))" method="logSelect" />-->
+
+		<!--</aop:aspect>-->
+
+		
+		<aop:aspect id="infoLogAspect" ref="infolog">
+			<!--  insert로 시작되는 service Method -->
+			<aop:around pointcut="execution(public * infomind.com..impl.*Impl.insert*(..))" method="logInsert" />
+			<!--  update로 시작되는 service Method -->
+			<aop:around pointcut="execution(public * infomind.com..impl.*Impl.update*(..))" method="logUpdate" />
+			<!--  delete로 시작되는 service Method -->
+			<aop:around pointcut="execution(public * infomind.com..impl.*Impl.delete*(..))" method="logDelete" />
+			<!--  select로 시작되는 service Method -->
+			<aop:around pointcut="execution(public * infomind.com..impl.*Impl.select*(..))" method="logSelect" />
+
+
+		</aop:aspect>
+
+
+	</aop:config>
+
+
+
+
+
+
+
+
+</beans>

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app id="WebApp_ID" version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee" 
+			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  
+			xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
+<!--
+    수정일          수성자                          수정내용
+   ==========      ========      =================================================
+   2011.9.19        이기하         filter 정리
+   2013.5.31        이기하         미사용 filter 정리(.mdo, .action)
+   2016.6.34        장동한         WebApplicationInitializer 방식으로 변경
+-->
+
+
+
+
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+        <welcome-file>egovDevIndex.jsp</welcome-file>
+    </welcome-file-list>
+
+    <login-config>
+        <auth-method>BASIC</auth-method>
+    </login-config>
+
+    <session-config>
+        <session-timeout>60</session-timeout>
+        <tracking-mode>COOKIE</tracking-mode>
+    </session-config>
+
+
+
+    <error-page>
+      <error-code>404</error-code>
+      <location>/code404.jsp</location>
+    </error-page>
+    
+    <error-page>
+      <error-code>500</error-code>
+      <location>/code500.jsp</location>
+    </error-page>
+
+
+
+
+
+    <!-- web fonts -->
+    <!--<mime-mapping>-->
+        <!--<extension>ttf</extension>-->
+        <!--<mime-type>application/font-sfnt</mime-type>-->
+    <!--</mime-mapping>-->
+    <!--<mime-mapping>-->
+        <!--<extension>woff</extension>-->
+        <!--<mime-type>application/font-woff</mime-type>-->
+    <!--</mime-mapping>-->
+    <!--<mime-mapping>-->
+        <!--<extension>woff2</extension>-->
+        <!--<mime-type>application/x-font-woff2</mime-type>-->
+    <!--</mime-mapping>-->
+    <!--<mime-mapping>-->
+        <!--<extension>eot</extension>-->
+        <!--<mime-type>application/vnd.ms-fontobject</mime-type>-->
+    <!--</mime-mapping>-->
+    <!--<mime-mapping>-->
+        <!--<extension>eot?#iefix</extension>-->
+        <!--<mime-type>application/vnd.ms-fontobject</mime-type>-->
+    <!--</mime-mapping>-->
+    <!--<mime-mapping>-->
+        <!--<extension>svg</extension>-->
+        <!--<mime-type>image/svg+xml</mime-type>-->
+    <!--</mime-mapping>-->
+    <!--<mime-mapping>-->
+        <!--<extension>svg#exosemibold</extension>-->
+        <!--<mime-type>image/svg+xml</mime-type>-->
+    <!--</mime-mapping>-->
+    <!--<mime-mapping>-->
+        <!--<extension>svg#exobolditalic</extension>-->
+        <!--<mime-type>image/svg+xml</mime-type>-->
+    <!--</mime-mapping>-->
+    <!--<mime-mapping>-->
+        <!--<extension>svg#exomedium</extension>-->
+        <!--<mime-type>image/svg+xml</mime-type>-->
+    <!--</mime-mapping>-->
+    <!--<mime-mapping>-->
+        <!--<extension>svg#exoregular</extension>-->
+        <!--<mime-type>image/svg+xml</mime-type>-->
+    <!--</mime-mapping>-->
+    <!--<mime-mapping>-->
+        <!--<extension>svg#fontawesomeregular</extension>-->
+        <!--<mime-type>image/svg+xml</mime-type>-->
+    <!--</mime-mapping>-->
+
+
+
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>*.css</url-pattern>
+        <url-pattern>*.js</url-pattern>
+        <url-pattern>*.map</url-pattern>
+        <url-pattern>*.woff</url-pattern>
+        <url-pattern>*.woff2</url-pattern>
+        <url-pattern>*.svg</url-pattern>
+        <url-pattern>*.eot</url-pattern>
+        <url-pattern>*.jpg</url-pattern>
+    </servlet-mapping>
+
+    <listener>
+
+        <listener-class>org.springframework.security.web.session.HttpSessionEventPublisher</listener-class>
+
+    </listener>
+
+
+</web-app>

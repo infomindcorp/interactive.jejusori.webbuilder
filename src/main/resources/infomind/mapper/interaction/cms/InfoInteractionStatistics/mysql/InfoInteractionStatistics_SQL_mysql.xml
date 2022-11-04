@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="InfoInteractionStatisticsDAO">
+
+    <select id="selectInfoInteractionStatisticsList" parameterType="infomind.interaction.cms.statistics.vo.InfoInteractionStatisticsVO" resultType="infomind.interaction.cms.statistics.vo.InfoInteractionStatisticsVO">
+        SELECT
+             a.PROJECT_KEY
+            ,a.PROJECT_NAME
+            ,a.REG_ID
+            ,a.REG_DT
+            ,IFNULL(b.VISIT,0) AS VISIT
+            ,IFNULL(b.COMMENT,0) AS COMMENT
+            ,IFNULL(b.`LIKE`,0) AS `LIKE`
+        FROM INFO_INTRC_PROJECT a LEFT JOIN (
+            SELECT
+                PROJECT_KEY,
+                COUNT(CASE
+                          WHEN usr_log_type = 'VISIT' THEN 1 END) AS `VISIT`,
+                COUNT(CASE
+                          WHEN usr_log_type = 'COMMENT' THEN
+                              1 END)                              AS `COMMENT`,
+                COUNT(CASE WHEN usr_log_type = 'LIKE' THEN 1 END) AS `LIKE`
+            FROM info_intrc_usr_log
+            WHERE 1=1
+            AND usr_log_dt BETWEEN #{strDay} AND #{endDay}
+        ) b ON a.PROJECT_KEY = b.PROJECT_KEY
+        WHERE 1=1
+        <if test="searchKeyword != null and searchKeyword != ''">
+            <if test="searchCondition == 1">
+                AND PROJECT_NAME = #{searchKeyword}
+            </if>
+        </if>
+        <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(regId)">
+            AND a.REG_ID = #{regId}
+        </if>
+
+        ORDER BY VISIT DESC
+        LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+    </select>
+
+    <select id="selectInfoInteractionStatisticsTotalCount" parameterType="infomind.interaction.cms.statistics.vo.InfoInteractionStatisticsVO" resultType="int">
+        SELECT
+            COUNT(*) totcnt
+        FROM INFO_INTRC_PROJECT
+        WHERE 1=1
+        <if test="searchKeyword != null and searchKeyword != ''">
+            <if test="searchCondition == 1">
+                AND PROJECT_NAME = #{searchKeyword}
+            </if>
+        </if>
+        <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(regId)">
+            AND REG_ID = #{regId}
+        </if>
+    </select>
+
+    <select id="selectInfoInteractionStatistics" parameterType="infomind.interaction.cms.contents.vo.InfoInteractionContentsVO" resultType="infomind.interaction.cms.contents.vo.InfoInteractionContentsVO">
+        SELECT
+             PROJECT_KEY
+            ,PROJECT_NAME
+            ,PROJECT_DESC
+            ,PROJECT_DATA
+            ,ATCH_FILE_ID
+            ,USE_SNS_SHARE_YN
+            ,USE_LIKE_YN
+            ,USE_COMMENT_YN
+            ,SHOW_YN
+            ,USE_YN
+            ,FN_USER_NM_BY_ESNTL_ID(REG_ID) as REG_ID
+            ,(DATEDIFF(NOW(),REG_DT) + 1) as TOTAL_REG_DT
+            ,DATE_FORMAT(REG_DT,'%Y-%m-%d') as REG_DT
+            ,MOD_ID
+            ,MOD_DT
+        FROM INFO_INTRC_PROJECT
+        WHERE 1=1
+        AND PROJECT_KEY = #{projectKey}
+    </select>
+
+    <select id="selectInfoInteractionWeekStatistics" parameterType="infomind.interaction.cms.statistics.vo.InfoInteractionStatisticsVO" resultType="infomind.interaction.cms.statistics.vo.InfoInteractionStatisticsVO">
+        SELECT
+             b.logDt
+            ,(@visit := @visit + IFNULL(a.VISIT, 0))   AS VISIT
+            ,(@comment := @comment + IFNULL(a.COMMENT, 0))   AS COMMENT
+            ,(@like := @like + IFNULL(a.LIKE, 0))   AS `LIKE`
+        FROM
+        (SELECT @visit := 0, @comment := 0, @like := 0) cnt,
+        (
+        SELECT
+             DATE_FORMAT(usr_log_dt, '%Y-%m-%d') AS logDt, COUNT(*) cnt
+            ,COUNT(CASE WHEN usr_log_type='VISIT' THEN 1 END) AS `VISIT`
+            ,COUNT(CASE WHEN usr_log_type='COMMENT' THEN 1 END) AS `COMMENT`
+            ,COUNT(CASE WHEN usr_log_type='LIKE' THEN 1 END) AS `LIKE`
+        FROM INFO_INTRC_USR_LOG
+        WHERE 1=1
+          AND usr_log_dt BETWEEN #{strDay} AND #{endDay}
+          AND PROJECT_KEY = #{projectKey}
+        GROUP BY DATE_FORMAT(usr_log_dt, '%Y-%m-%d')
+        ) a
+        RIGHT JOIN
+        (
+            WITH RECURSIVE TEST AS (
+                SELECT #{strDay} AS logDt
+                    UNION ALL
+                SELECT DATE_FORMAT(DATE_ADD(logDt,INTERVAL 1 DAY),'%Y-%m-%d')
+                FROM TEST
+                WHERE 1=1
+                AND logDt <![CDATA[<]]> #{endDay}
+            )
+        SELECT * FROM TEST
+        LIMIT 400
+        ) b ON a.logDt = b.logDt
+        ORDER BY b.logDt ASC;
+    </select>
+    
+    <select id="selectInfoInteractionMonthStatistics" parameterType="infomind.interaction.cms.statistics.vo.InfoInteractionStatisticsVO" resultType="infomind.interaction.cms.statistics.vo.InfoInteractionStatisticsVO">
+        SELECT
+              date_format(b.logDt,'%Y-%m-%d') AS logDt
+             ,(@visit := @visit + IFNULL(a.VISIT, 0))   AS VISIT
+             ,(@comment := @comment + IFNULL(a.COMMENT, 0))   AS COMMENT
+             ,(@like := @like + IFNULL(a.LIKE, 0))   AS `LIKE`
+        FROM
+            (SELECT @visit := 0, @comment := 0, @like := 0) cnt,
+            (
+                SELECT
+                    DATE_FORMAT(usr_log_dt, '%Y-%m') AS logDt, COUNT(*) cnt
+                     ,COUNT(CASE WHEN usr_log_type='VISIT' THEN 1 END) AS `VISIT`
+                     ,COUNT(CASE WHEN usr_log_type='COMMENT' THEN 1 END) AS `COMMENT`
+                     ,COUNT(CASE WHEN usr_log_type='LIKE' THEN 1 END) AS `LIKE`
+                FROM INFO_INTRC_USR_LOG
+                WHERE 1=1
+                  AND usr_log_dt BETWEEN #{strDay} AND #{endDay}
+                  AND PROJECT_KEY = #{projectKey}
+                GROUP BY DATE_FORMAT(usr_log_dt, '%Y-%m')
+            ) a
+                RIGHT JOIN
+            (
+                WITH RECURSIVE TEST AS (
+                    SELECT #{strDay} AS logDt
+                    UNION ALL
+                    SELECT DATE_FORMAT(DATE_ADD(logDt,INTERVAL 1 MONTH),'%Y-%m-%d')
+                    FROM TEST
+                    WHERE 1=1
+                      AND logDt <![CDATA[<]]> #{endDay}
+                )
+                SELECT * FROM TEST
+                                  LIMIT 400
+            ) b ON a.logDt = DATE_FORMAT(b.logDt,'%Y-%m')
+        ORDER BY b.logDt ASC;
+    </select>
+
+    <select id="selectInfoInteractionCommentList" parameterType="infomind.interaction.cms.statistics.vo.InfoInteractionCommentsVO" resultType="infomind.interaction.cms.statistics.vo.InfoInteractionCommentsVO">
+        SELECT
+              COMMENTS_SEQ
+             ,PROJECT_KEY
+             ,COMMENTS_TEXT
+             ,DATE_FORMAT(COMMENTS_DT,'%Y-%m-%d') as commentsDt
+             ,SHOW_YN
+             ,USE_YN
+        FROM INFO_INTRC_COMMENTS
+        WHERE 1=1
+        AND PROJECT_KEY = #{projectKey}
+        AND USE_YN = 'Y'
+    </select>
+
+    <update id="updateCommentsShowYn" parameterType="infomind.interaction.cms.statistics.vo.InfoInteractionCommentsVO">
+        UPDATE INFO_INTRC_COMMENTS
+            SET
+                SHOW_YN = #{showYn}
+        WHERE 1=1
+        AND COMMENTS_SEQ = #{commentsSeq}
+    </update>
+
+    <update id="updateCommentsUseYn" parameterType="infomind.interaction.cms.statistics.vo.InfoInteractionCommentsVO">
+        UPDATE INFO_INTRC_COMMENTS
+        SET
+            USE_YN = 'N'
+        WHERE 1=1
+          AND COMMENTS_SEQ = #{commentsSeq}
+    </update>
+    
+    <select id="selectInteractionTopContents" parameterType="infomind.interaction.cms.statistics.vo.InfoInteractionStatisticsVO" resultType="infomind.interaction.cms.statistics.vo.InfoInteractionStatisticsVO">
+        select
+            a.PROJECT_KEY,
+            b.PROJECT_NAME,
+            count(CASE WHEN usr_log_type = 'VISIT' THEN 1 END) as cnt
+        from info_intrc_usr_log a left outer join info_intrc_project b ON a.PROJECT_KEY = b.PROJECT_KEY
+        WHERE 1=1
+          AND usr_log_dt BETWEEN DATE_FORMAT(DATE_ADD(NOW(), INTERVAL -1 WEEK),'%Y-%m-%d') AND DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 1 DAY), '%Y-%m-%d')
+        <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(regId)">
+            AND b.REG_ID = #{regId}
+        </if>
+        group by a.PROJECT_KEY
+        order by cnt desc
+        LIMIT 5
+    </select>
+    
+    <select id="selectInteractionTopStatistics" parameterType="infomind.interaction.cms.statistics.vo.InfoInteractionStatisticsVO" resultType="infomind.interaction.cms.statistics.vo.InfoInteractionStatisticsVO">
+        SELECT
+            a.logDt,
+            (@visit := @visit + IFNULL(b.cnt, 0))   AS cnt,
+            b.PROJECT_KEY
+        FROM
+            (SELECT @visit := 0, @comment := 0, @like := 0) cnt,
+            (WITH RECURSIVE TEST AS (
+            SELECT DATE_FORMAT(DATE_ADD(NOW(), INTERVAL -1 WEEK), '%Y-%m-%d') AS logDt
+            UNION ALL
+            SELECT DATE_FORMAT(DATE_ADD(logDt, INTERVAL 1 DAY), '%Y-%m-%d')
+            FROM TEST
+            WHERE 1 = 1
+            AND logDt <![CDATA[<]]> #{endDay})
+            SELECT *
+            FROM TEST
+            LIMIT 400) a LEFT OUTER JOIN (
+            select
+            PROJECT_KEY,
+            count(CASE WHEN usr_log_type = 'VISIT' THEN 1 END) as cnt,
+            DATE_FORMAT(usr_log_dt, '%Y-%m-%d') as usr_log_dt
+            FROM INFO_INTRC_USR_LOG
+            WHERE 1=1
+            AND PROJECT_KEY = #{projectKey}
+            GROUP BY PROJECT_KEY, DATE_FORMAT(usr_log_dt, '%Y-%m-%d')
+        ) b ON a.logDt = b.usr_log_dt;
+    </select>
+
+    <select id="selectInteractionTopTableStatistics" parameterType="infomind.interaction.cms.statistics.vo.InfoInteractionStatisticsVO" resultType="infomind.interaction.cms.statistics.vo.InfoInteractionStatisticsVO">
+        select a.PROJECT_KEY,
+               b.PROJECT_NAME,
+               COUNT(CASE WHEN usr_log_type = 'VISIT' THEN 1 END) as visit,
+               COUNT(CASE WHEN usr_log_type = 'LIKE' THEN 1 END) as `like`
+        FROM INFO_INTRC_USR_LOG a LEFT JOIN info_intrc_project b ON a.PROJECT_KEY = b.PROJECT_KEY
+        WHERE 1 = 1
+          AND USR_LOG_DT between DATE_FORMAT(DATE_ADD(NOW(), INTERVAL -1 WEEK),'%Y-%m-%d') and DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 1 DAY), '%Y-%m-%d')
+        <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(regId)">
+            AND b.REG_ID = #{regId}
+        </if>
+        GROUP BY PROJECT_KEY
+        ORDER BY visit DESC
+        LIMIT 5
+
+    </select>
+</mapper>

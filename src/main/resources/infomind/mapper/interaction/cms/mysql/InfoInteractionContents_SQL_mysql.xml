@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="InfoInteractionContentsDAO">
+
+    <resultMap id="InteractionContentsMap" type="infomind.interaction.cms.contents.vo.InfoInteractionContentsVO" autoMapping="true">
+        <id property="projectKey" column="PROJECT_KEY"/>
+        <result property="projectName" column="PROJECT_NAME"/>
+        <result property="projectData" column="PROJECT_DATA"/>
+        <result property="showYn" column="SHOW_YN" />
+        <collection property="tag" select="InfoInteractionContentsDAO.selectTagNm" column="{projectKey=a.PROJECT_KEY}" autoMapping="true"/>
+    </resultMap>
+
+    <select id="selectContents"
+            parameterType="infomind.interaction.cms.contents.vo.InfoInteractionContentsVO"
+            resultType="infomind.interaction.cms.contents.vo.InfoInteractionContentsVO">
+        SELECT
+             A.PROJECT_KEY
+            , A.PROJECT_NAME
+            , A.USE_SNS_SHARE_YN
+            , A.USE_LIKE_YN
+            , A.USE_COMMENT_YN
+            , A.SHOW_YN
+            , A.USE_YN
+            , A.PROJECT_DESC
+            , A.ATCH_FILE_ID
+            , A.ORDER_NUMBER
+        FROM INFO_INTRC_PROJECT A
+        WHERE 1=1
+        AND A.PROJECT_KEY = #{projectKey}
+    </select>
+
+    <select id="selectContentsTotalCount" parameterType="infomind.interaction.cms.contents.vo.InfoInteractionContentsVO" resultType="int">
+        SELECT COUNT(*) CNT FROM (
+            SELECT
+              IIP.PROJECT_KEY
+            , IIP.PROJECT_NAME
+            , IIP.PROJECT_DESC
+            , IIP.ATCH_FILE_ID
+            , IIP.USE_SNS_SHARE_YN
+            , IIP.USE_LIKE_YN
+            , IIP.USE_COMMENT_YN
+            , IIP.SHOW_YN
+            , IIP.USE_YN
+            , IIP.REG_ID
+            , IIP.REG_DT
+            , IIP.MOD_ID
+            , IIP.MOD_DT
+            , GROUP_CONCAT(IITG.TAG_GRP_NM, '>', IIT.TAG_NM) as TAG_NM
+            , FN_USER_NM_BY_ESNTL_ID(IIP.REG_ID) REG_NM
+            , FN_USER_NM_BY_ESNTL_ID(IIP.MOD_ID) MOD_NM
+
+            FROM info_intrc_project IIP
+            LEFT OUTER JOIN
+                (
+                    SELECT
+                    PROJECT_KEY
+                    ,TAG_ID
+                    ,GROUP_CONCAT(TAG_ID) AS TAG_LIST
+                    FROM
+                    INFO_INTRC_PROJECT_TAG
+                    GROUP BY PROJECT_KEY
+                )
+                IIPT ON IIPT.PROJECT_KEY = IIP.PROJECT_KEY
+            LEFT OUTER JOIN info_intrc_tag IIT ON IIT.TAG_ID = IIPT.TAG_ID
+            LEFT OUTER JOIN info_intrc_tag_grp IITG ON IITG.TAG_GRP_ID = IIT.TAG_GRP_ID
+
+            WHERE 1=1
+            <if test="@org.apache.commons.lang3.StringUtils@isEmpty(showYn)">
+                AND IIP.SHOW_YN = 'Y'
+            </if>
+            <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(regId)">
+                AND IIP.REG_ID = #{regId}
+            </if>
+
+            <if test="searchKeyword != null and searchKeyword != ''">
+                <if test="searchCondition == 1">
+                    AND
+                    IIP.PROJECT_KEY LIKE CONCAT('%' , #{searchKeyword} , '%')
+                </if>
+                <if test="searchCondition == 2">
+                    AND
+                    IIP.PROJECT_NAME LIKE CONCAT('%' , #{searchKeyword} , '%')
+                </if>
+            </if>
+
+            <if test="tag!=null and tag.size!=0">
+                <foreach collection="tag" item="item" index="index">
+                    AND IIPT.TAG_LIST LIKE CONCAT('%' , #{item} , '%')
+                </foreach>
+            </if>
+
+            GROUP BY IIP.PROJECT_KEY, IIP.PROJECT_NAME, IIP.PROJECT_DESC, IIP.ATCH_FILE_ID, IIP.USE_SNS_SHARE_YN, IIP.USE_LIKE_YN, IIP.USE_COMMENT_YN, IIP.SHOW_YN, IIP.USE_YN, IIP.REG_ID, IIP.REG_DT, IIP.MOD_ID, IIP.MOD_DT
+        ) T
+    </select>
+
+    <select id="selectContentsList"
+            parameterType="infomind.interaction.cms.contents.vo.InfoInteractionContentsVO"
+            resultType="infomind.interaction.cms.contents.vo.InfoInteractionContentsVO">
+        SELECT
+              IIP.PROJECT_KEY
+            , IIP.PROJECT_NAME
+            , IIP.PROJECT_DESC
+            , IIP.ATCH_FILE_ID
+            , IIP.USE_SNS_SHARE_YN
+            , IIP.USE_LIKE_YN
+            , IIP.USE_COMMENT_YN
+            , IIP.SHOW_YN
+            , IIP.USE_YN
+            , IIP.REG_ID
+            , IIP.REG_DT
+            , IIP.MOD_ID
+            , IIP.MOD_DT
+            , IIP.ORDER_NUMBER
+
+            , (SELECT COUNT(1) FROM info_intrc_usr_log WHERE usr_log_type = 'VISIT' AND PROJECT_KEY=IIP.PROJECT_KEY) VISIT_CNT
+            , (SELECT COUNT(1) FROM info_intrc_usr_log WHERE usr_log_type = 'SHARE' AND PROJECT_KEY=IIP.PROJECT_KEY) SHARE_CNT
+            , (SELECT COUNT(1) FROM info_intrc_usr_log WHERE usr_log_type = 'LIKE'  AND PROJECT_KEY=IIP.PROJECT_KEY) LIKE_CNT
+            , (SELECT COUNT(1) FROM info_intrc_comments WHERE USE_YN = 'Y' AND SHOW_YN = 'Y' AND PROJECT_KEY=IIP.PROJECT_KEY) COMMENT_CNT
+
+            , GROUP_CONCAT(IITG.TAG_GRP_NM, '>', IIT.TAG_NM) as TAG_NM
+            , FN_USER_NM_BY_ESNTL_ID(IIP.REG_ID) REG_NM
+            , FN_USER_NM_BY_ESNTL_ID(IIP.MOD_ID) MOD_NM
+
+        FROM info_intrc_project IIP
+        LEFT OUTER JOIN info_intrc_usr_log IIUL on IIUL.PROJECT_KEY = IIP.PROJECT_KEY
+        LEFT OUTER JOIN (
+            SELECT PROJECT_KEY ,TAG_ID , GROUP_CONCAT(TAG_ID) AS TAG_LIST
+            FROM INFO_INTRC_PROJECT_TAG
+            GROUP BY PROJECT_KEY
+        ) IIPT ON IIPT.PROJECT_KEY = IIP.PROJECT_KEY
+
+        LEFT OUTER JOIN info_intrc_tag IIT ON IIT.TAG_ID = IIPT.TAG_ID
+        LEFT OUTER JOIN info_intrc_tag_grp IITG ON IITG.TAG_GRP_ID = IIT.TAG_GRP_ID
+        WHERE 1=1
+
+        <if test="@org.apache.commons.lang3.StringUtils@isEmpty(showYn)">
+            AND IIP.SHOW_YN = 'Y'
+        </if>
+
+        <if test="searchCondition == 1">
+            AND IIP.PROJECT_KEY LIKE CONCAT('%' , #{searchKeyword} , '%')
+        </if>
+
+        <if test="tag!=null and tag.size!=0">
+            <foreach collection="tag" item="item" index="index">
+                AND IIPT.TAG_LIST LIKE CONCAT('%' , #{item} , '%')
+            </foreach>
+        </if>
+
+        GROUP BY IIP.PROJECT_KEY, IIP.PROJECT_NAME, IIP.PROJECT_DESC, IIP.ATCH_FILE_ID, IIP.USE_SNS_SHARE_YN, IIP.USE_LIKE_YN, IIP.USE_COMMENT_YN, IIP.SHOW_YN, IIP.USE_YN, IIP.REG_ID, IIP.REG_DT, IIP.MOD_ID, IIP.MOD_DT, IIP.ORDER_NUMBER
+        ORDER BY ORDER_NUMBER ASC, REG_DT DESC
+        LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+    </select>
+
+    <select id="selectTagNm" parameterType="infomind.interaction.cms.contents.vo.InfoInteractionContentsVO" resultType="String">
+        SELECT
+            CONCAT(b.TAG_NM,' (',c.TAG_GRP_NM,')') AS tag
+        FROM INFO_INTRC_PROJECT_TAG a
+                 INNER JOIN INFO_INTRC_TAG b ON a.TAG_ID = b.TAG_ID
+                 LEFT JOIN INFO_INTRC_TAG_GRP c ON b.TAG_GRP_ID = c.TAG_GRP_ID
+        WHERE 1=1
+          AND a.PROJECT_KEY = #{projectKey}
+    </select>
+
+
+
+    <insert id="insertContents">
+        INSERT INTO INFO_INTRC_PROJECT (
+             PROJECT_KEY
+           , PROJECT_NAME
+           , PROJECT_DESC
+           , PROJECT_DATA
+           , ATCH_FILE_ID
+           , USE_SNS_SHARE_YN
+           , USE_LIKE_YN
+           , USE_COMMENT_YN
+           , SHOW_YN
+           , USE_YN
+           , REG_ID
+           , REG_DT
+           , MOD_ID
+           , MOD_DT
+           , ORDER_NUMBER
+        ) VALUES (
+            #{projectKey}
+          , #{projectName}
+          , #{projectDesc}
+          , #{projectData}
+          , #{atchFileId}
+          , #{useSnsShareYn}
+          , #{useLikeYn}
+          , #{useCommentYn}
+          , #{showYn}
+          , 'Y'
+          , #{regId}
+          , NOW()
+          , #{modId}
+          , NOW()
+          , #{orderNumber}
+       )
+    </insert>
+
+    <update id="updateContents">
+        UPDATE INFO_INTRC_PROJECT SET
+             PROJECT_NAME=#{projectName}
+           , PROJECT_DESC=#{projectDesc}
+           , USE_SNS_SHARE_YN=#{useSnsShareYn}
+           , USE_LIKE_YN=#{useLikeYn}
+           , USE_COMMENT_YN=#{useCommentYn}
+           , SHOW_YN=#{showYn}
+           , ATCH_FILE_ID =#{atchFileId}
+           , MOD_ID = #{modId}
+           , MOD_DT = NOW()
+           , ORDER_NUMBER = #{orderNumber}
+        WHERE 1=1
+        AND   PROJECT_KEY = #{projectKey}
+    </update>
+
+    <select id="selectTag">
+        select *
+        from info_intrc_project_tag a
+           , info_intrc_tag b
+           , info_intrc_tag_grp c
+        where 1=1
+          AND a.TAG_ID = b.TAG_ID
+          AND b.TAG_GRP_ID = c.TAG_GRP_ID
+    </select>
+
+    <select
+            id="getSelectContentsList"
+            parameterType="infomind.interaction.cms.contents.vo.InfoInteractionContentsVO"
+            resultMap="InteractionContentsMap">
+        select  a.PROJECT_NAME
+             ,a.PROJECT_KEY
+             ,a.SHOW_YN
+             ,a.ORDER_NUMBER
+        from info_intrc_project a
+        where 1=1
+        <if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(regId)">
+            AND a.REG_ID = #{regId}
+        </if>
+        <if test="searchKeyword != null and searchKeyword != ''">
+            <if test="searchCondition == 1">
+                AND
+                A.PROJECT_KEY LIKE CONCAT('%' , #{searchKeyword} , '%')
+            </if>
+            <if test="searchCondition == 2">
+                AND
+                A.PROJECT_NAME LIKE CONCAT('%' , #{searchKeyword} , '%')
+            </if>
+        </if>
+        ORDER BY A.ORDER_NUMBER ASC, A.REG_DT DESC
+        LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+     </select>
+
+    <select id="getSelectContentsTagList" parameterType="infomind.interaction.cms.tag.vo.InfoInteractionTagVO" resultType="infomind.interaction.cms.tag.vo.InfoInteractionTagVO">
+        select
+               a.PROJECT_NAME
+            ,c.TAG_NM
+            ,d.TAG_GRP_NM
+         from
+          info_intrc_project a
+        , info_intrc_project_tag b
+        , info_intrc_tag c
+        , info_intrc_tag_grp d
+        where 1=1
+          AND a.PROJECT_KEY = b.PROJECT_KEY
+          AND b.TAG_ID = c.TAG_ID
+          AND c.TAG_GRP_ID = d.TAG_GRP_ID
+          AND a.PROJECT_KEY = #{projectKey}
+    </select>
+
+
+    <update id="deleteContents">
+        UPDATE INFO_INTRC_PROJECT SET
+            USE_YN = 'N'
+        WHERE 1=1
+        AND PROJECT_KEY = #{projectKey}
+    </update>
+
+
+
+    <select id="checkProjectKey"  resultType="int">
+        SELECT COUNT(1) usedCnt
+        FROM
+            INFO_INTRC_PROJECT
+        where PROJECT_KEY = #{projectKey}
+    </select>
+
+    <select id="getSelectTagList"
+            parameterType="infomind.interaction.cms.contents.vo.InfoInteractionContentsVO"
+            resultMap="InteractionContentsMap">
+        SELECT
+            a.PROJECT_KEY
+             , a.PROJECT_NAME
+        FROM INFO_INTRC_PROJECT a
+        WHERE 1=1
+          AND a.PROJECT_KEY = #{projectKey}
+    </select>
+
+    <select id="getBeforeTag"
+            parameterType="infomind.interaction.cms.tag.vo.InfoInteractionTagVO"
+            resultType="infomind.interaction.cms.tag.vo.InfoInteractionTagVO">
+        select
+            IIPT.TAG_ID,
+            CONCAT(IITG.TAG_GRP_NM, '>', IIT.TAG_NM) as TAG_NM
+        from INFO_INTRC_PROJECT_TAG IIPT
+                 left join info_intrc_tag IIT on IIPT.TAG_ID = IIT.TAG_ID
+                 left join info_intrc_tag_grp IITG on IIT.TAG_GRP_ID = IITG.TAG_GRP_ID
+        where 1=1
+          and IIPT.PROJECT_KEY = #{projectKey}
+    </select>
+
+    <update id="updateShowYn">
+        UPDATE INFO_INTRC_PROJECT SET
+            SHOW_YN = #{showYn}
+        WHERE 1=1
+          AND PROJECT_KEY = #{projectKey}
+    </update>
+
+</mapper>

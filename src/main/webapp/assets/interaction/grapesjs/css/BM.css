@@ -1,0 +1,27 @@
+
+@font-face {
+	font-family: 'BMJUA';
+	font-style: normal;
+	font-weight: 500;
+	font-display: swap;
+	src: local('BMJUA'),
+	url("../fonts/BM/BMJUA.woff") format('woff');
+}
+
+@font-face {
+	font-family: 'BMEuljirooraeorae';
+	font-style: normal;
+	font-weight: 500;
+	font-display: swap;
+	src: local('BMEuljirooraeorae'),
+	url("../fonts/BM/BMEuljirooraeorae.woff") format('woff');
+}
+
+@font-face {
+	font-family: 'BMEuljiro10yearslater';
+	font-style: normal;
+	font-weight: 500;
+	font-display: swap;
+	src: local('BMEuljiro10yearslater'),
+	url("../fonts/BM/BMEuljiro10yearslater.woff") format('woff');
+}

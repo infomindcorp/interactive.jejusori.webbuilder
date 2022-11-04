@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="menuManageDAO">
+	
+	<select id="selectMainMenuHead" parameterType="egovframework.com.sym.mnu.mpm.service.MenuManageVO" resultType="egovMap">
+		 
+            SELECT
+			      B.MENU_NO           AS "menuNo"
+				, B.MENU_ORDR         AS "menuOrdr"
+				, B.MENU_NM           AS "menuNm"
+				, B.UPPER_MENU_NO     AS "upperMenuId"
+				, B.MENU_DC           AS "menuDc"
+				, B.RELATE_IMAGE_PATH AS "relateImagePath"
+				, B.RELATE_IMAGE_NM   AS "relateImageNm"
+				, B.PROGRM_FILE_NM    AS "progrmFileNm"
+				, (SELECT C.URL FROM COMTNPROGRMLIST C WHERE B.PROGRM_FILE_NM = C.PROGRM_FILE_NM) AS "chkURL"
+			FROM COMTNMENUCREATDTLS A, COMTNMENUINFO B 
+			WHERE  B.Menu_NO > 0 
+			AND    B.UPPER_MENU_NO = 0  
+			AND    A.MENU_NO  = B.MENU_NO 
+			AND    A.AUTHOR_CODE = (SELECT C.AUTHOR_CODE from COMTNEMPLYRSCRTYESTBS C
+	                                WHERE  C.SCRTY_DTRMN_TRGET_ID = #{tmpUniqId})
+			ORDER BY MENU_ORDR
+		 
+	</select>
+
+	<select id="selectMainMenuLeft" parameterType="egovframework.com.sym.mnu.mpm.service.MenuManageVO" resultType="egovMap">
+		 
+			SELECT
+			       B.MENU_NO           AS "menuNo"
+				 , B.MENU_ORDR         AS "menuOrdr"
+				 , B.MENU_NM           AS "menuNm"
+				 , B.UPPER_MENU_NO     AS "upperMenuId"
+				 , B.RELATE_IMAGE_PATH AS "relateImagePath"
+				 , B.RELATE_IMAGE_NM   AS "relateImageNm"
+				 , (SELECT C.URL FROM COMTNPROGRMLIST C WHERE B.PROGRM_FILE_NM = C.PROGRM_FILE_NM) AS "chkURL"	
+			FROM   COMTNMENUCREATDTLS A, COMTNMENUINFO B
+			WHERE  A.MENU_NO  = B.MENU_NO 
+			AND    A.AUTHOR_CODE = (SELECT AUTHOR_CODE from COMTNEMPLYRSCRTYESTBS
+	                                WHERE  SCRTY_DTRMN_TRGET_ID = #{tmpUniqId})
+			ORDER BY B.MENU_ORDR
+		 
+	</select>
+
+	<select id="selectLastMenuURL" parameterType="egovframework.com.sym.mnu.mpm.service.MenuManageVO" resultType="String">
+		 
+			SELECT URL 
+			FROM   COMTNPROGRMLIST
+			WHERE  PROGRM_FILE_NM =
+			       (SELECT PROGRM_FILE_NM FROM COMTNMENUINFO
+				    WHERE MENU_NO = #{menuNo})
+		 
+	</select>
+
+	<select id="selectLastMenuNo" parameterType="egovframework.com.sym.mnu.mpm.service.MenuManageVO" resultType="int">
+		 
+			select MIN(MENU_NO) 
+			from   COMTNMENUINFO
+			where  UPPER_MENU_NO = #{menuNo}
+			and    MENU_ORDR =
+			      (select MIN(MENU_ORDR) 
+			       from COMTNMENUCREATDTLS A, COMTNMENUINFO B
+			       where A.MENU_NO = B.MENU_NO
+			       AND   A.AUTHOR_CODE = (SELECT AUTHOR_CODE from COMTNEMPLYRSCRTYESTBS
+	                                      WHERE  SCRTY_DTRMN_TRGET_ID = #{tempValue})
+			       AND   B.UPPER_MENU_NO = #{menuNo})
+		 
+	</select>
+
+	<select id="selectLastMenuNoCnt" parameterType="egovframework.com.sym.mnu.mpm.service.MenuManageVO" resultType="int">
+		 
+			select count(MENU_NO) 
+			from   COMTNMENUINFO
+			where  UPPER_MENU_NO = #{menuNo}
+			and    MENU_ORDR =
+			      (select MIN(MENU_ORDR) 
+			       from COMTNMENUCREATDTLS A, COMTNMENUINFO B
+			       where A.MENU_NO = B.MENU_NO
+			       AND   A.AUTHOR_CODE = (SELECT AUTHOR_CODE from COMTNEMPLYRSCRTYESTBS
+	                                      WHERE  SCRTY_DTRMN_TRGET_ID = #{tempValue})
+			       AND   B.UPPER_MENU_NO = #{menuNo})
+		 
+	</select>
+
+	<select id="selectMainMenuAll" parameterType="egovframework.com.sym.mnu.mpm.service.MenuManageVO" resultType="egovframework.com.sym.mnu.mpm.service.MenuManageVO">
+
+		SELECT    A.MENU_NM				as "menuNm"
+				, A.PROGRM_FILE_NM		as "progrmFileNm"
+				, A.MENU_NO				as "menuNo"
+				, A.UPPER_MENU_NO		as "upperMenuId"
+				, A.MENU_ORDR			as "menuOrdr"
+				, A.MENU_LEVEL			as "menuLevel"
+				, A.depth_fullname		as "depthFullname"
+				, (SELECT C.URL FROM COMTNPROGRMLIST C WHERE A.PROGRM_FILE_NM = C.PROGRM_FILE_NM) AS "chkURL"
+					, A.BOARD_ID            as "boardId"
+		FROM (
+
+				SELECT A.MENU_NM
+						, A.PROGRM_FILE_NM
+						, A.MENU_NO
+						, A.UPPER_MENU_NO
+						, A.MENU_ORDR
+						, LEVEL -1 AS MENU_LEVEL
+						, LTRIM (SYS_CONNECT_BY_PATH (A.MENU_NM, ' > '), ' > ') AS depth_fullname
+					    , A.BOARD_ID
+				FROM COMTNMENUINFO A
+				WHERE 1=1
+				<![CDATA[
+					AND A.MENU_NO <>0
+				]]>
+
+				START WITH A.MENU_NO = 0
+				CONNECT BY PRIOR A.MENU_NO = DECODE(A.MENU_NO,0,NULL,A.UPPER_MENU_NO)
+				ORDER SIBLINGS BY A.MENU_ORDR
+		)A , COMTNMENUCREATDTLS B
+		WHERE 1=1
+		AND A.MENU_NO =B.MENU_NO
+		AND B.AUTHOR_CODE = (SELECT C.AUTHOR_CODE from COMTNEMPLYRSCRTYESTBS C
+		WHERE  C.SCRTY_DTRMN_TRGET_ID = #{tmpUniqId})
+
+
+
+	</select>
+
+
+	<select id="selectMenuInfo" parameterType="egovframework.com.sym.mnu.mpm.service.MenuManageVO" resultType="egovframework.com.sym.mnu.mpm.service.MenuManageVO">
+
+		SELECT        A.MENU_NM				as "menuNm"
+					, A.PROGRM_FILE_NM		as "progrmFileNm"
+					, A.MENU_NO				as "menuNo"
+					, A.MENU_NO				as "menuTargetNo"
+					, A.UPPER_MENU_NO		as "upperMenuId"
+					, A.MENU_ORDR			as "menuOrdr"
+					, A.MENU_LEVEL			as "menuLevel"
+					, A.depth_fullname		as "depthFullname"
+					, A.BOARD_ID            as "boardId"
+		FROM (
+					SELECT      A.MENU_NM
+					, A.PROGRM_FILE_NM
+					, A.MENU_NO
+					, A.UPPER_MENU_NO
+					, A.MENU_ORDR
+					, A.BOARD_ID
+					, LEVEL -1 AS MENU_LEVEL
+					, LTRIM (SYS_CONNECT_BY_PATH (A.MENU_NM, ' > '), ' > ') AS depth_fullname
+
+					FROM COMTNMENUINFO A
+					WHERE 1=1
+						<![CDATA[
+					AND A.MENU_NO <>0
+					   ]]>
+					START WITH A.MENU_NO = 0
+					CONNECT BY PRIOR A.MENU_NO = DECODE(A.MENU_NO,0,NULL,A.UPPER_MENU_NO)
+					ORDER SIBLINGS BY A.MENU_ORDR
+		) A WHERE 1=1
+		AND A.MENU_NO = #{menuTargetNo}
+
+	</select>
+
+</mapper>
+

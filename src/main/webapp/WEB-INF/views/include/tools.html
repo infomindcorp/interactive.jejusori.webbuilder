@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>header</title>
+</head>
+<body>
+
+<div th:fragment="tools">
+    <script src="https://cdn.jsdelivr.net/npm/sharer.js@latest/sharer.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
+
+    <div class="sub-news-tools">
+        <button type="button" class="reply" data-event="reply" th:if="${project.useCommentYn eq 'Y'}">댓글</button>
+        <button type="button" class="share" data-event="share" th:if="${project.useSnsShareYn eq 'Y'}">공유</button>
+        <button type="button" class="like" data-event="like" th:if="${project.useLikeYn eq 'Y'}">좋아요</button>
+        <button type="button" class="back" onclick="location.href='/';">메인으로</button>
+    </div>
+    <div class="sub-news-reply" data-event="reply" th:if="${project.useCommentYn eq 'Y'}">
+        <form action="#" onsubmit="return commentController.post(this);">
+            <fieldset>
+                <legend>댓글입력</legend>
+                <strong>댓글입력</strong>
+                <label for="name" class="sr-only">이름</label>
+                <input id="name" type="text" name="commentsTitle" placeholder="이름" maxlength="10">
+                <label for="password" class="sr-only">비밀번호</label>
+                <input id="password" type="password" name="passwd" placeholder="비밀번호" maxlength="20">
+                <label for="text" class="sr-only">댓글작성</label>
+                <textarea id="text" name="commentsText" placeholder="댓글내용"></textarea>
+                <button type="submit" class="submit">등록</button>
+
+                <ul class="list" id="commentList">
+                </ul>
+
+                <button type="button" class="close">창닫기</button>
+            </fieldset>
+        </form>
+    </div>
+    <div class="sub-news-share" data-event="share" th:if="${project.useSnsShareYn eq 'Y'}">
+        <fieldset>
+            <legend>공유하기</legend>
+            <strong>공유하기</strong>
+            <div class="buttons">
+                <button class="facebook" data-sharer="facebook" data-url="">페이스북</button>
+                <button class="twitter" data-sharer="twitter" data-title="Checkout Sharer.js!" data-url="">트위터</button>
+            </div>
+            <button class="close">창닫기</button>
+        </fieldset>
+    </div>
+
+    <script th:inline="javascript" th:if="${project.useCommentYn eq 'Y'}">
+
+        var commentController = (function() {
+            var $commentList = $('#commentList');
+
+            var find = function () {
+                $commentList.empty();
+                fetch('/site/comment/' + [[${project.projectKey}]], {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                    }
+                }).then(function(response){
+                    return response.json();
+                }).then(function(data){
+                    data.forEach(function(v, i) {
+                        var $li = $('<li />');
+                        $li.append($('<strong />', { 'html': v.commentsTitle }))
+                        $li.append($('<span />', { 'text': v.commentsText }))
+                        //$li.append($('<button />', { 'type': 'button', 'text': '삭제' }).on('click', function() {
+                        //    $('input[comment-idx=' + v.commentsSeq + ']').show();
+                        //}))
+                        //$li.append($('<input />', { 'comment-idx': v.commentsSeq, 'type': 'password', 'placeholder': '작성시 비밀번호를 입력하세요' }))
+                        $commentList.append($li);
+                    })
+                })
+            }
+            var post = function (_form) {
+                var _this = this;
+
+                if(!_form.commentsTitle.value) {
+                    alert('제목을 작성하여 주시기 바랍니다');
+                    return false;
+                }
+
+                if(!_form.commentsText.value) {
+                    alert('내용을 작성하여 주시기 바랍니다');
+                    return false;
+                }
+
+                if(!_form.passwd.value) {
+                    alert('비밀번호을 작성하여 주시기 바랍니다');
+                    return false;
+                }
+
+                fetch('/site/comment/' + [[${project.projectKey}]], {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        projectKey: [[${project.projectKey}]],
+                        commentsTitle: _form.commentsTitle.value,
+                        commentsText: _form.commentsText.value,
+                        passwd: _form.passwd.value
+                    }),
+                }).then(function(response){
+                    if(response.status == 200) {
+                        _this.find();
+                        _form.reset();
+                    }
+                });
+                return false;
+            }
+            return {
+                find,
+                post
+            }
+        })();
+
+        $(document.body).ready(function() {
+            commentController.find();
+
+            $('button[data-event=reply]').on('click', function() {
+                $('div[data-event=reply]').show();
+            })
+            $('div[data-event=reply] button.close').on('click', function() {
+                $('div[data-event=reply]').hide();
+            })
+        });
+    </script>
+    <script th:inline="javascript" th:if="${project.useSnsShareYn eq 'Y'}">
+        $(document.body).ready(function() {
+
+            $('[data-sharer]').attr('data-url', window.location.href)
+            $('[data-sharer=twitter]').attr('data-title', [[${project.projectName}]])
+
+            $('button[data-event=share]').on('click', function() {
+                $('div[data-event=share]').show();
+            })
+            $('div[data-event=share] button.close').on('click', function() {
+                $('div[data-event=share]').hide();
+            })
+
+            $('button[data-sharer=facebook]').on('click', function(){
+                fetch('/site/log/share/' + [[${project.projectKey}]], {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({}),
+                }).then(function(response){
+
+                });
+            })
+            $('button[data-sharer=twitter]').on('click', function(){
+                fetch('/site/log/share/' + [[${project.projectKey}]], {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({}),
+                }).then(function(response){
+
+                });
+            })
+        });
+
+    </script>
+    <script th:inline="javascript" th:if="${project.useLikeYn eq 'Y'}">
+        $(document.body).ready(function() {
+
+            var isLike = Cookies.get('project.' + [[${project.projectKey}]])
+            if(isLike) {
+                $('button[data-event=like]').addClass('on')
+            }
+
+            $('button[data-event=like]').on('click', function(e) {
+                if($(e.target).hasClass('on')) {
+
+                }else {
+                    fetch('/site/log/like/' + [[${project.projectKey}]], {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({}),
+                    }).then(function(response){
+                        $(e.target).addClass('on')
+                        Cookies.set('project.' + [[${project.projectKey}]], true)
+                    });
+                }
+            })
+
+        });
+    </script>
+</div>
+
+</body>
+</html>

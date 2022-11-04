@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>header</title>
+</head>
+<body>
+<div th:fragment="header">
+    <header id="header">
+        <div class="container">
+            <h1><a href="/"><small>제주의소리</small> [[${project.projectName}]]</a></h1>
+            <div>
+                <h2>제작지원 : <small>한국언론진흥재단</small></h2>
+            </div>
+        </div>
+    </header>
+</div>
+</body>
+</html>
